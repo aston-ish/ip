@@ -1,8 +1,7 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Topaz {
-    private static final int MAX_TASKS = 100;
-
     private static int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
         String numberText = command.substring(action.length()).trim();
@@ -31,12 +30,6 @@ public class Topaz {
         return trimmedText;
     }
 
-    private static void ensureCapacity(int taskCount) throws TopazException {
-        if (taskCount >= MAX_TASKS) {
-            throw new TopazException("Your task list is full.");
-        }
-    }
-
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
         String banner = " _____                 _          \n"
@@ -52,8 +45,7 @@ public class Topaz {
         System.out.println("What can I do for you?");
         System.out.println(separator);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -68,34 +60,38 @@ public class Topaz {
 
                 if (command.equals("list")) {
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i].getDisplayIcon() + " "
-                                + tasks[i].getDescription());
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
+                                + tasks.get(i).getDescription());
                     }
                 } else if (command.startsWith("mark ")) {
-                    int taskIndex = parseTaskNumber(command, "mark", taskCount);
-                    tasks[taskIndex].markAsDone();
+                    int taskIndex = parseTaskNumber(command, "mark", tasks.size());
+                    tasks.get(taskIndex).markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks[taskIndex].getDisplayIcon() + " "
-                            + tasks[taskIndex].getDescription());
+                    System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
+                            + tasks.get(taskIndex).getDescription());
                 } else if (command.startsWith("unmark ")) {
-                    int taskIndex = parseTaskNumber(command, "unmark", taskCount);
-                    tasks[taskIndex].markAsNotDone();
+                    int taskIndex = parseTaskNumber(command, "unmark", tasks.size());
+                    tasks.get(taskIndex).markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks[taskIndex].getDisplayIcon() + " "
-                            + tasks[taskIndex].getDescription());
+                    System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
+                            + tasks.get(taskIndex).getDescription());
+                } else if (command.equals("delete") || command.startsWith("delete ")) {
+                    int taskIndex = parseTaskNumber(command, "delete", tasks.size());
+                    Task task = tasks.get(taskIndex);
+                    tasks.remove(taskIndex);
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else if (command.equals("todo") || command.startsWith("todo ")) {
-                    ensureCapacity(taskCount);
                     String description = requireText(command.substring(4),
                             "The description of a todo cannot be empty.");
-                    tasks[taskCount] = new Todo(description);
-                    taskCount++;
+                    Task task = new Todo(description);
+                    tasks.add(task);
                     System.out.println(" Got it. I've added this task:");
-                    System.out.println("   " + tasks[taskCount - 1].getDisplayIcon() + " "
-                            + tasks[taskCount - 1].getDescription());
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else if (command.equals("deadline") || command.startsWith("deadline ")) {
-                    ensureCapacity(taskCount);
                     String content = command.substring(8).trim();
                     int byIndex = content.indexOf(" /by ");
                     if (byIndex < 0) {
@@ -106,17 +102,16 @@ public class Topaz {
                     String by = requireText(content.substring(byIndex + 5),
                             "The deadline time cannot be empty.");
                     Task task = new Deadline(description, by);
-                    tasks[taskCount] = task;
-                    taskCount++;
+                    tasks.add(task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else if (command.equals("event") || command.startsWith("event ")) {
-                    ensureCapacity(taskCount);
                     String content = command.substring(5).trim();
                     int fromIndex = content.indexOf(" /from ");
                     int toIndex = content.indexOf(" /to ");
-                    if (fromIndex < 0 || toIndex < 0 || fromIndex > toIndex) {
+                    if (fromIndex < 0 || toIndex < 0 || fromIndex > toIndex
+                            || fromIndex + 7 >= toIndex) {
                         throw new TopazException("Use: event <description> /from <time> /to <time>.");
                     }
                     String description = requireText(content.substring(0, fromIndex),
@@ -126,11 +121,10 @@ public class Topaz {
                     String to = requireText(content.substring(toIndex + 5),
                             "The event end time cannot be empty.");
                     Task task = new Event(description, from, to);
-                    tasks[taskCount] = task;
-                    taskCount++;
+                    tasks.add(task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
-                    System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else {
                     throw new TopazException("I'm sorry, but I don't know what that means.");
                 }

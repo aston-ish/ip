@@ -173,6 +173,73 @@ ____________________________________________________________
 Both cases intentionally interleave valid and invalid commands so that state changes
 caused by rejected inputs are visible in later `list` output.
 
+### Test case: Delete tasks and preserve list order
+
+Aim: Verify that deleting a task removes the correct item, shifts later tasks up, and rejects a missing task number without changing state.
+
+Input:
+```text
+todo first
+deadline second /by tomorrow
+event third /from 2pm /to 4pm
+delete 2
+list
+delete
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] first
+ Now you have 1 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] second (by: tomorrow)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] third (from: 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Noted. I've removed this task:
+   [D][ ] second (by: tomorrow)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] first
+ 2.[E][ ] third (from: 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+ Please provide a task number after delete.
+____________________________________________________________
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] first
+ 2.[E][ ] third (from: 2pm to: 4pm)
+____________________________________________________________
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
 ### Test case: Invalid task numbers do not change state
 
 Aim: Verify that out-of-range and non-numeric mark commands do not alter or add tasks.
@@ -266,7 +333,7 @@ Hello! I'm Topaz.
 What can I do for you?
 ____________________________________________________________
 ____________________________________________________________
- The event start time cannot be empty.
+ Use: event <description> /from <time> /to <time>.
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
