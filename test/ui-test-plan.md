@@ -24,3 +24,15 @@ Expected output:
 
 The `test-ui` skill runs each case in a fresh process and stops immediately at the
 first failure, showing the actual and expected output.
+
+## Pending UI coverage
+
+The task-type feature requires executable UI cases for:
+
+- adding a todo with `todo borrow book`;
+- adding a deadline with `deadline return book /by Sunday`;
+- adding an event with `event project meeting /from Mon 2pm /to 4pm`; and
+- listing all three task types with their type and completion icons.
+
+These cases are pending until a Java 25 runtime is available to capture the exact
+full console output, including the startup banner and separators.
