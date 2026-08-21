@@ -42,6 +42,12 @@ public class Topaz {
                 completed[taskIndex] = true;
                 System.out.println(" Nice! I've marked this task as done:");
                 System.out.println("   [X] " + tasks[taskIndex]);
+            } else if (command.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(command.substring(7));
+                int taskIndex = taskNumber - 1;
+                completed[taskIndex] = false;
+                System.out.println(" OK, I've marked this task as not done yet:");
+                System.out.println("   [ ] " + tasks[taskIndex]);
             } else if (taskCount < tasks.length) {
                 tasks[taskCount] = command;
                 taskCount++;
