@@ -43,8 +43,8 @@ public abstract class Task {
         return description;
     }
 
-    /** Returns this task's type icon. */
-    public abstract String getTypeIcon();
+    /** Returns this task's type. */
+    public abstract TaskType getTaskType();
 
     /**
      * Returns the task type and completion status for display.
@@ -52,6 +52,6 @@ public abstract class Task {
      * @return a display icon such as {@code [D][ ]}
      */
     public String getDisplayIcon() {
-        return "[" + getTypeIcon() + "][" + getStatusIcon() + "]";
+        return "[" + getTaskType().getIcon() + "][" + getStatusIcon() + "]";
     }
 }

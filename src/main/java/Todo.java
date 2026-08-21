@@ -6,7 +6,7 @@ public class Todo extends Task {
     }
 
     @Override
-    public String getTypeIcon() {
-        return "T";
+    public TaskType getTaskType() {
+        return TaskType.TODO;
     }
 }
