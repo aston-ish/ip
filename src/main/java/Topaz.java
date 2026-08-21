@@ -17,6 +17,7 @@ public class Topaz {
         System.out.println(separator);
 
         String[] tasks = new String[100];
+        boolean[] completed = new boolean[100];
         int taskCount = 0;
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
@@ -30,9 +31,17 @@ public class Topaz {
             }
 
             if (command.equals("list")) {
+                System.out.println(" Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                    String status = completed[i] ? "[X]" : "[ ]";
+                    System.out.println(" " + (i + 1) + "." + status + " " + tasks[i]);
                 }
+            } else if (command.startsWith("mark ")) {
+                int taskNumber = Integer.parseInt(command.substring(5));
+                int taskIndex = taskNumber - 1;
+                completed[taskIndex] = true;
+                System.out.println(" Nice! I've marked this task as done:");
+                System.out.println("   [X] " + tasks[taskIndex]);
             } else if (taskCount < tasks.length) {
                 tasks[taskCount] = command;
                 taskCount++;
