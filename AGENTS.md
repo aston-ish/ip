@@ -33,3 +33,9 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+## UI testing after code updates
+
+After every code update, review `test/ui-test-plan.md` and add or revise test cases when the change affects command-line UI behavior. 
+Then invoke the project-specific `test-ui` skill to run the plan. If the plan has no applicable cases, record the reason in the plan 
+or report the limitation clearly; do not silently skip the skill invocation.
