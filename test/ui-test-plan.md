@@ -27,7 +27,7 @@ first failure, showing the actual and expected output.
 
 ## Pending UI coverage
 
-The task-type feature requires executable UI cases for:
+The inherited task-type feature requires executable UI cases for:
 
 - adding a todo with `todo borrow book`;
 - adding a deadline with `deadline return book /by Sunday`;

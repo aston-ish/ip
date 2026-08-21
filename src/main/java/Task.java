@@ -1,12 +1,8 @@
 /**
  * Represents a task entered by the user.
  */
-public class Task {
+public abstract class Task {
     protected String description;
-    protected String type;
-    protected String by;
-    protected String from;
-    protected String to;
     protected boolean isDone;
 
     /**
@@ -15,30 +11,8 @@ public class Task {
      * @param description the task description
      */
     public Task(String description) {
-        this(description, "T");
-    }
-
-    /**
-     * Creates an incomplete task of the given type.
-     *
-     * @param description the task description
-     * @param type the task type icon, such as {@code T}, {@code D}, or {@code E}
-     */
-    public Task(String description, String type) {
         this.description = description;
-        this.type = type;
         this.isDone = false;
-    }
-
-    /** Sets the deadline text for this task. */
-    public void setBy(String by) {
-        this.by = by;
-    }
-
-    /** Sets the start and end time text for this task. */
-    public void setTime(String from, String to) {
-        this.from = from;
-        this.to = to;
     }
 
     /** Marks this task as done. */
@@ -66,14 +40,11 @@ public class Task {
      * @return the task description
      */
     public String getDescription() {
-        if (type.equals("D")) {
-            return description + " (by: " + by + ")";
-        }
-        if (type.equals("E")) {
-            return description + " (from: " + from + " to: " + to + ")";
-        }
         return description;
     }
+
+    /** Returns this task's type icon. */
+    public abstract String getTypeIcon();
 
     /**
      * Returns the task type and completion status for display.
@@ -81,6 +52,6 @@ public class Task {
      * @return a display icon such as {@code [D][ ]}
      */
     public String getDisplayIcon() {
-        return "[" + type + "][" + getStatusIcon() + "]";
+        return "[" + getTypeIcon() + "][" + getStatusIcon() + "]";
     }
 }

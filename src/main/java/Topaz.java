@@ -51,7 +51,7 @@ public class Topaz {
                         + tasks[taskIndex].getDescription());
             } else if (command.startsWith("todo ")) {
                 String description = command.substring(5);
-                tasks[taskCount] = new Task(description, "T");
+                tasks[taskCount] = new Todo(description);
                 taskCount++;
                 System.out.println(" Got it. I've added this task:");
                 System.out.println("   " + tasks[taskCount - 1].getDisplayIcon() + " "
@@ -59,8 +59,7 @@ public class Topaz {
                 System.out.println(" Now you have " + taskCount + " tasks in the list.");
             } else if (command.startsWith("deadline ")) {
                 String[] parts = command.substring(9).split(" /by ", 2);
-                Task task = new Task(parts[0], "D");
-                task.setBy(parts[1]);
+                Task task = new Deadline(parts[0], parts[1]);
                 tasks[taskCount] = task;
                 taskCount++;
                 System.out.println(" Got it. I've added this task:");
@@ -68,15 +67,14 @@ public class Topaz {
                 System.out.println(" Now you have " + taskCount + " tasks in the list.");
             } else if (command.startsWith("event ")) {
                 String[] parts = command.substring(6).split(" /from | /to ", 3);
-                Task task = new Task(parts[0], "E");
-                task.setTime(parts[1], parts[2]);
+                Task task = new Event(parts[0], parts[1], parts[2]);
                 tasks[taskCount] = task;
                 taskCount++;
                 System.out.println(" Got it. I've added this task:");
                 System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                 System.out.println(" Now you have " + taskCount + " tasks in the list.");
             } else if (taskCount < tasks.length) {
-                tasks[taskCount] = new Task(command, "T");
+                tasks[taskCount] = new Todo(command);
                 taskCount++;
                 System.out.println(" added: " + command);
             }
