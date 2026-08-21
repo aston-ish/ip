@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Topaz {
@@ -45,11 +46,10 @@ public class Topaz {
         System.out.println("What can I do for you?");
         System.out.println(separator);
 
-        ArrayList<Task> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
-            System.out.println(separator);
 
             try {
                 if (command.equals("bye")) {
@@ -64,13 +64,13 @@ public class Topaz {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
                                 + tasks.get(i).getDescription());
                     }
-                } else if (command.startsWith("mark ")) {
+                } else if (command.equals("mark") || command.startsWith("mark ")) {
                     int taskIndex = parseTaskNumber(command, "mark", tasks.size());
                     tasks.get(taskIndex).markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
                             + tasks.get(taskIndex).getDescription());
-                } else if (command.startsWith("unmark ")) {
+                } else if (command.equals("unmark") || command.startsWith("unmark ")) {
                     int taskIndex = parseTaskNumber(command, "unmark", tasks.size());
                     tasks.get(taskIndex).markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
@@ -95,6 +95,9 @@ public class Topaz {
                     String content = command.substring(8).trim();
                     int byIndex = content.indexOf(" /by ");
                     if (byIndex < 0) {
+                        if (content.endsWith(" /by")) {
+                            throw new TopazException("The deadline time cannot be empty.");
+                        }
                         throw new TopazException("Use: deadline <description> /by <time>.");
                     }
                     String description = requireText(content.substring(0, byIndex),
@@ -111,8 +114,15 @@ public class Topaz {
                     int fromIndex = content.indexOf(" /from ");
                     int toIndex = content.indexOf(" /to ");
                     if (fromIndex < 0 || toIndex < 0 || fromIndex > toIndex
-                            || fromIndex + 7 >= toIndex) {
+                            || content.indexOf(" /from ", fromIndex + 1) >= 0
+                            || content.indexOf(" /to ", toIndex + 1) >= 0) {
+                        if (content.endsWith(" /to")) {
+                            throw new TopazException("The event end time cannot be empty.");
+                        }
                         throw new TopazException("Use: event <description> /from <time> /to <time>.");
+                    }
+                    if (toIndex < fromIndex + 7) {
+                        throw new TopazException("The event start time cannot be empty.");
                     }
                     String description = requireText(content.substring(0, fromIndex),
                             "The description of an event cannot be empty.");

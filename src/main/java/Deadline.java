@@ -1,6 +1,6 @@
 /** Represents a task that must be completed by a specified time. */
 public class Deadline extends Task {
-    private String by;
+    private final String by;
 
     /** Creates an incomplete deadline task. */
     public Deadline(String description, String by) {

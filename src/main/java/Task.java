@@ -2,8 +2,8 @@
  * Represents a task entered by the user.
  */
 public abstract class Task {
-    protected String description;
-    protected boolean isDone;
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates an incomplete task with the given description.

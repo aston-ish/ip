@@ -1,7 +1,7 @@
 /** Represents a task with a start and end time. */
 public class Event extends Task {
-    private String from;
-    private String to;
+    private final String from;
+    private final String to;
 
     /** Creates an incomplete event task. */
     public Event(String description, String from, String to) {
