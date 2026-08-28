@@ -35,8 +35,8 @@ Aim: Verify that a fresh chatbot process loads saved tasks with their type, comp
 Setup: Create `data/Topaz.txt` with the following contents before starting Topaz:
 
 ```text
-D | 1 | return book | Sunday
-E | 0 | project meeting | Mon 2pm | 4pm
+D | 1 | return book | 2026-12-07
+E | 0 | project meeting | 2026-12-08T14:00 | 2026-12-08T16:00
 ```
 
 Input:
@@ -50,8 +50,8 @@ Expected output after startup:
 
 ```text
  Here are the tasks in your list:
- 1.[D][X] return book (by: Sunday)
- 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 1.[D][X] return book (by: Dec 07 2026)
+ 2.[E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
 ```
 
 ### Test case: Interleaved task creation and invalid commands
@@ -63,11 +63,11 @@ Input:
 todo read book
 todo
 list
-deadline return book /by Sunday
+deadline return book /by 2026-12-07
 deadline return book
 list
-event project meeting /from Mon 2pm /to 4pm
-event project meeting /from Mon 2pm
+event project meeting /from 8/12/2026 1400 /to 8/12/2026 1600
+event project meeting /from 8/12/2026 1400
 list
 bye
 ```
@@ -95,25 +95,25 @@ ____________________________________________________________
  1.[T][ ] read book
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] return book (by: Sunday)
+   [D][ ] return book (by: Dec 07 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  Use: deadline <description> /by <time>.
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][ ] return book (by: Sunday)
+ 2.[D][ ] return book (by: Dec 07 2026)
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+   [E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
  Use: event <description> /from <time> /to <time>.
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][ ] return book (by: Sunday)
- 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[D][ ] return book (by: Dec 07 2026)
+ 3.[E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
 ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -171,8 +171,8 @@ Input:
 ```text
 todo read book
 mark 1
-deadline return book /by Sunday
-event project meeting /from Mon 2pm /to 4pm
+deadline return book /by 2026-12-07
+event project meeting /from 8/12/2026 1400 /to 8/12/2026 1600
 delete 1
 bye
 ```
@@ -198,11 +198,11 @@ ____________________________________________________________
    [T][X] read book
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] return book (by: Sunday)
+   [D][ ] return book (by: Dec 07 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+   [E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
  Noted. I've removed this task:
@@ -216,8 +216,8 @@ ____________________________________________________________
 Expected `data/Topaz.txt` after this case:
 
 ```text
-D | 0 | return book | Sunday
-E | 0 | project meeting | Mon 2pm | 4pm
+D | 0 | return book | 2026-12-07
+E | 0 | project meeting | 2026-12-08T14:00 | 2026-12-08T16:00
 ```
 
 ### Test case: Interleaved mark, unmark, and invalid task numbers
@@ -290,8 +290,8 @@ Aim: Verify that deleting a task removes the correct item, shifts later tasks up
 Input:
 ```text
 todo first
-deadline second /by tomorrow
-event third /from 2pm /to 4pm
+deadline second /by 2026-12-09
+event third /from 10/12/2026 1400 /to 10/12/2026 1600
 delete 2
 list
 delete
@@ -317,26 +317,26 @@ ____________________________________________________________
  Now you have 1 tasks in the list.
 ____________________________________________________________
  Got it. I've added this task:
-   [D][ ] second (by: tomorrow)
+   [D][ ] second (by: Dec 09 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  Got it. I've added this task:
-   [E][ ] third (from: 2pm to: 4pm)
+   [E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
  Noted. I've removed this task:
-   [D][ ] second (by: tomorrow)
+   [D][ ] second (by: Dec 09 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] first
- 2.[E][ ] third (from: 2pm to: 4pm)
+ 2.[E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
 ____________________________________________________________
  Please provide a task number after delete.
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] first
- 2.[E][ ] third (from: 2pm to: 4pm)
+ 2.[E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
 ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
@@ -466,6 +466,114 @@ ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] first task
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Test case: Parse and display dates and times
+
+Aim: Verify that valid dates are stored as date/time values, displayed in a readable format, and that invalid dates do not change the list.
+
+Input:
+```text
+deadline return book /by 2/12/2019 1800
+list
+deadline review notes /by 2019-10-15
+list
+deadline invalid date /by 31/02/2019 1800
+list
+event project meeting /from 15/10/2019 1400 /to 15/10/2019 1600
+list
+event invalid event /from 15/10/2019 1400 /to 2019-02-29
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Dec 02 2019 1800)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019 1800)
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] review notes (by: Oct 15 2019)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019 1800)
+ 2.[D][ ] review notes (by: Oct 15 2019)
+____________________________________________________________
+ Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019 1800)
+ 2.[D][ ] review notes (by: Oct 15 2019)
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019 1800)
+ 2.[D][ ] review notes (by: Oct 15 2019)
+ 3.[E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
+____________________________________________________________
+ Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 02 2019 1800)
+ 2.[D][ ] review notes (by: Oct 15 2019)
+ 3.[E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Test case: Display date-only event times
+
+Aim: Verify that date-only event values are stored as dates and displayed without an artificial midnight time.
+
+Input:
+```text
+event conference /from 2019-10-15 /to 2019-10-16
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] conference (from: Oct 15 2019 to: Oct 16 2019)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[E][ ] conference (from: Oct 15 2019 to: Oct 16 2019)
 ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
