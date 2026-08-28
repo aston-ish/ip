@@ -26,18 +26,6 @@ public class Topaz {
         }
     }
 
-    /** Removes a task and restores it to its original position if saving fails. */
-    private Task deleteAndSaveTask(TaskList tasks, int taskIndex) throws TopazException {
-        Task task = tasks.remove(taskIndex);
-        try {
-            storage.save(tasks.asList());
-            return task;
-        } catch (TopazException exception) {
-            tasks.add(taskIndex, task);
-            throw exception;
-        }
-    }
-
     /** Runs the chatbot until the user enters the bye command. */
     public void run() {
         TaskList tasks;
@@ -73,9 +61,8 @@ public class Topaz {
                     Command unmarkCommand = parser.parseUnmarkCommand(command, tasks.size());
                     unmarkCommand.execute(tasks, ui, storage);
                 } else if (command.equals("delete") || command.startsWith("delete ")) {
-                    int taskIndex = parser.parseTaskNumber(command, "delete", tasks.size());
-                    Task task = deleteAndSaveTask(tasks, taskIndex);
-                    ui.showDeletedTask(task, tasks.size());
+                    Command deleteCommand = parser.parseDeleteCommand(command, tasks.size());
+                    deleteCommand.execute(tasks, ui, storage);
                 } else if (command.equals("todo") || command.startsWith("todo ")) {
                     Task task = parser.parseTodo(command);
                     addAndSaveTask(tasks, task);

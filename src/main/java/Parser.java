@@ -12,7 +12,7 @@ public class Parser {
                     .withResolverStyle(ResolverStyle.STRICT);
 
     /** Parses a numbered command and returns its zero-based task index. */
-    public int parseTaskNumber(String command, String action, int taskCount)
+    private int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
         String numberText = command.substring(action.length()).trim();
         if (numberText.isEmpty()) {
@@ -40,6 +40,11 @@ public class Parser {
     /** Parses an unmark command into an unmark command object. */
     public Command parseUnmarkCommand(String command, int taskCount) throws TopazException {
         return new UnmarkCommand(parseTaskNumber(command, "unmark", taskCount));
+    }
+
+    /** Parses a delete command into a delete command object. */
+    public Command parseDeleteCommand(String command, int taskCount) throws TopazException {
+        return new DeleteCommand(parseTaskNumber(command, "delete", taskCount));
     }
 
     /** Parses a todo command into a todo task. */
