@@ -11,6 +11,28 @@ public class Parser {
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
 
+    /** Parses one complete user command into the command object that performs it. */
+    public Command parse(String command, int taskCount) throws TopazException {
+        if (command.equals("bye")) {
+            return new ExitCommand();
+        } else if (command.equals("list")) {
+            return new ListCommand();
+        } else if (command.equals("mark") || command.startsWith("mark ")) {
+            return parseMarkCommand(command, taskCount);
+        } else if (command.equals("unmark") || command.startsWith("unmark ")) {
+            return parseUnmarkCommand(command, taskCount);
+        } else if (command.equals("delete") || command.startsWith("delete ")) {
+            return parseDeleteCommand(command, taskCount);
+        } else if (command.equals("todo") || command.startsWith("todo ")) {
+            return parseTodo(command);
+        } else if (command.equals("deadline") || command.startsWith("deadline ")) {
+            return parseDeadline(command);
+        } else if (command.equals("event") || command.startsWith("event ")) {
+            return parseEvent(command);
+        }
+        throw new TopazException("I'm sorry, but I don't know what that means.");
+    }
+
     /** Parses a numbered command and returns its zero-based task index. */
     private int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
@@ -33,29 +55,29 @@ public class Parser {
     }
 
     /** Parses a mark command into a mark command object. */
-    public Command parseMarkCommand(String command, int taskCount) throws TopazException {
+    private Command parseMarkCommand(String command, int taskCount) throws TopazException {
         return new MarkCommand(parseTaskNumber(command, "mark", taskCount));
     }
 
     /** Parses an unmark command into an unmark command object. */
-    public Command parseUnmarkCommand(String command, int taskCount) throws TopazException {
+    private Command parseUnmarkCommand(String command, int taskCount) throws TopazException {
         return new UnmarkCommand(parseTaskNumber(command, "unmark", taskCount));
     }
 
     /** Parses a delete command into a delete command object. */
-    public Command parseDeleteCommand(String command, int taskCount) throws TopazException {
+    private Command parseDeleteCommand(String command, int taskCount) throws TopazException {
         return new DeleteCommand(parseTaskNumber(command, "delete", taskCount));
     }
 
     /** Parses a todo command into an add command. */
-    public Command parseTodo(String command) throws TopazException {
+    private Command parseTodo(String command) throws TopazException {
         String description = requireText(command.substring(4),
                 "The description of a todo cannot be empty.");
         return new AddCommand(new Todo(description));
     }
 
     /** Parses a deadline command into an add command. */
-    public Command parseDeadline(String command) throws TopazException {
+    private Command parseDeadline(String command) throws TopazException {
         String content = command.substring(8).trim();
         int byIndex = content.indexOf(" /by ");
         if (byIndex < 0) {
@@ -74,7 +96,7 @@ public class Parser {
     }
 
     /** Parses an event command into an add command. */
-    public Command parseEvent(String command) throws TopazException {
+    private Command parseEvent(String command) throws TopazException {
         String content = command.substring(5).trim();
         int fromIndex = content.indexOf(" /from ");
         int toIndex = content.indexOf(" /to ");
