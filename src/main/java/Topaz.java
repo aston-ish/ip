@@ -1,8 +1,35 @@
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Topaz {
+    private static final File SAVE_FILE = new File("./data/Topaz.txt");
+
+    /**
+     * Saves every task in the current list to the hard disk.
+     *
+     * @param tasks the tasks to save
+     * @throws TopazException if the save file cannot be created or written
+     */
+    private static void saveTasks(List<Task> tasks) throws TopazException {
+        File parentDirectory = SAVE_FILE.getParentFile();
+        if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
+            throw new TopazException("Unable to create the data directory.");
+        }
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE))) {
+            for (Task task : tasks) {
+                writer.println(task.toFileString());
+            }
+        } catch (IOException exception) {
+            throw new TopazException("Unable to save your tasks.");
+        }
+    }
+
     private static int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
         String numberText = command.substring(action.length()).trim();
@@ -67,12 +94,14 @@ public class Topaz {
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
                     int taskIndex = parseTaskNumber(command, "mark", tasks.size());
                     tasks.get(taskIndex).markAsDone();
+                    saveTasks(tasks);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
                             + tasks.get(taskIndex).getDescription());
                 } else if (command.equals("unmark") || command.startsWith("unmark ")) {
                     int taskIndex = parseTaskNumber(command, "unmark", tasks.size());
                     tasks.get(taskIndex).markAsNotDone();
+                    saveTasks(tasks);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
                             + tasks.get(taskIndex).getDescription());
@@ -80,6 +109,7 @@ public class Topaz {
                     int taskIndex = parseTaskNumber(command, "delete", tasks.size());
                     Task task = tasks.get(taskIndex);
                     tasks.remove(taskIndex);
+                    saveTasks(tasks);
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -88,6 +118,7 @@ public class Topaz {
                             "The description of a todo cannot be empty.");
                     Task task = new Todo(description);
                     tasks.add(task);
+                    saveTasks(tasks);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -106,6 +137,7 @@ public class Topaz {
                             "The deadline time cannot be empty.");
                     Task task = new Deadline(description, by);
                     tasks.add(task);
+                    saveTasks(tasks);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -132,6 +164,7 @@ public class Topaz {
                             "The event end time cannot be empty.");
                     Task task = new Event(description, from, to);
                     tasks.add(task);
+                    saveTasks(tasks);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");

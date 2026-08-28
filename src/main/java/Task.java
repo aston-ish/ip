@@ -43,8 +43,24 @@ public abstract class Task {
         return description;
     }
 
+    /**
+     * Returns whether this task is completed.
+     *
+     * @return true if this task is done
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
     /** Returns this task's type. */
     public abstract TaskType getTaskType();
+
+    /**
+     * Returns this task in the format used by the save file.
+     *
+     * @return a line representing this task
+     */
+    public abstract String toFileString();
 
     /**
      * Returns the task type and completion status for display.

@@ -90,6 +90,63 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Test case: Save changed task list
+
+Aim: Verify that adding, marking, and deleting tasks saves the remaining task list to `data/Topaz.txt`.
+
+Input:
+```text
+todo read book
+mark 1
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+delete 1
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Sunday)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Noted. I've removed this task:
+   [T][X] read book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Expected `data/Topaz.txt` after this case:
+
+```text
+D | 0 | return book | Sunday
+E | 0 | project meeting | Mon 2pm | 4pm
+```
+
 ### Test case: Interleaved mark, unmark, and invalid task numbers
 
 Aim: Verify that invalid mark and unmark commands do not change completion status.
