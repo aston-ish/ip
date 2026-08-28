@@ -5,7 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
+import java.util.Locale;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
@@ -13,6 +19,9 @@ public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
     private static final Path SAVE_FILE = Paths.get(
             System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
+    private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
+            DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
+                    .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * Saves every task in the current list to the hard disk.
@@ -102,9 +111,12 @@ public class Topaz {
         if (values.length == 3 && values[0].equals("T")) {
             task = new Todo(values[2]);
         } else if (values.length == 4 && values[0].equals("D")) {
-            task = new Deadline(values[2], values[3]);
+            task = new Deadline(values[2], parseDateTime(values[3], "Unable to load a saved task."),
+                    hasTimeComponent(values[3]));
         } else if (values.length == 5 && values[0].equals("E")) {
-            task = new Event(values[2], values[3], values[4]);
+            task = new Event(values[2], parseDateTime(values[3], "Unable to load a saved task."),
+                    parseDateTime(values[4], "Unable to load a saved task."),
+                    hasTimeComponent(values[3]), hasTimeComponent(values[4]));
         } else {
             throw new TopazException("Unable to load a saved task.");
         }
@@ -113,6 +125,28 @@ public class Topaz {
             task.markAsDone();
         }
         return task;
+    }
+
+    /** Parses a supported date or date-time into a value that can be compared and saved reliably. */
+    private static LocalDateTime parseDateTime(String text, String errorMessage) throws TopazException {
+        try {
+            return LocalDateTime.parse(text, DATE_TIME_INPUT_FORMAT);
+        } catch (DateTimeParseException exception) {
+            try {
+                return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
+            } catch (DateTimeParseException ignoredException) {
+                try {
+                    return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                } catch (DateTimeParseException ignoredAgainException) {
+                    throw new TopazException(errorMessage);
+                }
+            }
+        }
+    }
+
+    /** Returns whether a date string includes a time component. */
+    private static boolean hasTimeComponent(String text) {
+        return !text.matches("\\d{4}-\\d{2}-\\d{2}");
     }
 
     private static int parseTaskNumber(String command, String action, int taskCount)
@@ -270,7 +304,9 @@ public class Topaz {
                             "The description of a deadline cannot be empty.");
                     String by = requireText(content.substring(byIndex + 5),
                             "The deadline time cannot be empty.");
-                    Task task = new Deadline(description, by);
+                    LocalDateTime byDateTime = parseDateTime(by,
+                            "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
+                    Task task = new Deadline(description, byDateTime, hasTimeComponent(by));
                     addAndSaveTask(tasks, task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
@@ -296,7 +332,12 @@ public class Topaz {
                             "The event start time cannot be empty.");
                     String to = requireText(content.substring(toIndex + 5),
                             "The event end time cannot be empty.");
-                    Task task = new Event(description, from, to);
+                    LocalDateTime fromDateTime = parseDateTime(from,
+                            "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
+                    LocalDateTime toDateTime = parseDateTime(to,
+                            "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
+                    Task task = new Event(description, fromDateTime, toDateTime,
+                            hasTimeComponent(from), hasTimeComponent(to));
                     addAndSaveTask(tasks, task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
