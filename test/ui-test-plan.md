@@ -119,6 +119,50 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Test case: Reserved save-file delimiter
+
+Aim: Verify that task details containing `|` are rejected and do not change the task list, because `|` separates fields in the save file.
+
+Input:
+```text
+todo read | book
+list
+deadline return book /by Sun|day
+list
+event meeting /from 2|pm /to 4pm
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
 ### Test case: Save changed task list
 
 Aim: Verify that adding, marking, and deleting tasks saves the remaining task list to `data/Topaz.txt`.
