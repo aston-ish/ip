@@ -186,10 +186,10 @@ public class Topaz {
     }
 
     /** Adds a task and restores the list if saving fails. */
-    private static void addAndSaveTask(List<Task> tasks, Task task) throws TopazException {
+    private static void addAndSaveTask(TaskList tasks, Task task) throws TopazException {
         tasks.add(task);
         try {
-            saveTasks(tasks);
+            saveTasks(tasks.asList());
         } catch (TopazException exception) {
             tasks.remove(tasks.size() - 1);
             throw exception;
@@ -197,32 +197,32 @@ public class Topaz {
     }
 
     /** Changes a task's completion state and restores it if saving fails. */
-    private static void updateTaskStatus(List<Task> tasks, int taskIndex, boolean isDone)
+    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone)
             throws TopazException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
-            task.markAsDone();
+            tasks.markAsDone(taskIndex);
         } else {
-            task.markAsNotDone();
+            tasks.markAsNotDone(taskIndex);
         }
         try {
-            saveTasks(tasks);
+            saveTasks(tasks.asList());
         } catch (TopazException exception) {
             if (wasDone) {
-                task.markAsDone();
+                tasks.markAsDone(taskIndex);
             } else {
-                task.markAsNotDone();
+                tasks.markAsNotDone(taskIndex);
             }
             throw exception;
         }
     }
 
     /** Removes a task and restores it to its original position if saving fails. */
-    private static Task deleteAndSaveTask(List<Task> tasks, int taskIndex) throws TopazException {
+    private static Task deleteAndSaveTask(TaskList tasks, int taskIndex) throws TopazException {
         Task task = tasks.remove(taskIndex);
         try {
-            saveTasks(tasks);
+            saveTasks(tasks.asList());
             return task;
         } catch (TopazException exception) {
             tasks.add(taskIndex, task);
@@ -232,9 +232,9 @@ public class Topaz {
 
     /** Runs the chatbot until the user enters the bye command. */
     public void run() {
-        List<Task> tasks;
+        TaskList tasks;
         try {
-            tasks = loadTasks();
+            tasks = new TaskList(loadTasks());
         } catch (TopazException exception) {
             ui.showLoadingError(exception);
             return;

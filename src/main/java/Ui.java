@@ -1,4 +1,3 @@
-import java.util.List;
 import java.util.Scanner;
 
 /** Handles console input and all messages shown to the user. */
@@ -43,7 +42,7 @@ public class Ui {
     }
 
     /** Shows every task in the task list. */
-    public void showTaskList(List<Task> tasks) {
+    public void showTaskList(TaskList tasks) {
         System.out.println(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
