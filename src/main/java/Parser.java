@@ -47,15 +47,15 @@ public class Parser {
         return new DeleteCommand(parseTaskNumber(command, "delete", taskCount));
     }
 
-    /** Parses a todo command into a todo task. */
-    public Task parseTodo(String command) throws TopazException {
+    /** Parses a todo command into an add command. */
+    public Command parseTodo(String command) throws TopazException {
         String description = requireText(command.substring(4),
                 "The description of a todo cannot be empty.");
-        return new Todo(description);
+        return new AddCommand(new Todo(description));
     }
 
-    /** Parses a deadline command into a deadline task. */
-    public Task parseDeadline(String command) throws TopazException {
+    /** Parses a deadline command into an add command. */
+    public Command parseDeadline(String command) throws TopazException {
         String content = command.substring(8).trim();
         int byIndex = content.indexOf(" /by ");
         if (byIndex < 0) {
@@ -70,11 +70,11 @@ public class Parser {
                 "The deadline time cannot be empty.");
         LocalDateTime byDateTime = parseDateTime(by,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
-        return new Deadline(description, byDateTime, hasTimeComponent(by));
+        return new AddCommand(new Deadline(description, byDateTime, hasTimeComponent(by)));
     }
 
-    /** Parses an event command into an event task. */
-    public Task parseEvent(String command) throws TopazException {
+    /** Parses an event command into an add command. */
+    public Command parseEvent(String command) throws TopazException {
         String content = command.substring(5).trim();
         int fromIndex = content.indexOf(" /from ");
         int toIndex = content.indexOf(" /to ");
@@ -99,8 +99,8 @@ public class Parser {
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         LocalDateTime toDateTime = parseDateTime(to,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
-        return new Event(description, fromDateTime, toDateTime,
-                hasTimeComponent(from), hasTimeComponent(to));
+        return new AddCommand(new Event(description, fromDateTime, toDateTime,
+                hasTimeComponent(from), hasTimeComponent(to)));
     }
 
     /** Requires a non-empty text value that can be represented in the save file. */

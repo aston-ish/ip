@@ -15,17 +15,6 @@ public class Topaz {
         parser = new Parser();
     }
 
-    /** Adds a task and restores the list if saving fails. */
-    private void addAndSaveTask(TaskList tasks, Task task) throws TopazException {
-        tasks.add(task);
-        try {
-            storage.save(tasks.asList());
-        } catch (TopazException exception) {
-            tasks.remove(tasks.size() - 1);
-            throw exception;
-        }
-    }
-
     /** Runs the chatbot until the user enters the bye command. */
     public void run() {
         TaskList tasks;
@@ -64,17 +53,14 @@ public class Topaz {
                     Command deleteCommand = parser.parseDeleteCommand(command, tasks.size());
                     deleteCommand.execute(tasks, ui, storage);
                 } else if (command.equals("todo") || command.startsWith("todo ")) {
-                    Task task = parser.parseTodo(command);
-                    addAndSaveTask(tasks, task);
-                    ui.showAddedTask(task, tasks.size());
+                    Command addCommand = parser.parseTodo(command);
+                    addCommand.execute(tasks, ui, storage);
                 } else if (command.equals("deadline") || command.startsWith("deadline ")) {
-                    Task task = parser.parseDeadline(command);
-                    addAndSaveTask(tasks, task);
-                    ui.showAddedTask(task, tasks.size());
+                    Command addCommand = parser.parseDeadline(command);
+                    addCommand.execute(tasks, ui, storage);
                 } else if (command.equals("event") || command.startsWith("event ")) {
-                    Task task = parser.parseEvent(command);
-                    addAndSaveTask(tasks, task);
-                    ui.showAddedTask(task, tasks.size());
+                    Command addCommand = parser.parseEvent(command);
+                    addCommand.execute(tasks, ui, storage);
                 } else {
                     throw new TopazException("I'm sorry, but I don't know what that means.");
                 }
