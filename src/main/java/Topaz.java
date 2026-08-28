@@ -1,8 +1,120 @@
 import java.util.ArrayList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Topaz {
+    private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
+    private static final Path SAVE_FILE = Paths.get(
+            System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
+
+    /**
+     * Saves every task in the current list to the hard disk.
+     *
+     * @param tasks the tasks to save
+     * @throws TopazException if the save file cannot be created or written
+     */
+    private static void saveTasks(List<Task> tasks) throws TopazException {
+        try {
+            Path parentDirectory = SAVE_FILE.getParent();
+            if (parentDirectory != null && Files.exists(parentDirectory)
+                    && !Files.isDirectory(parentDirectory)) {
+                throw new TopazException("The data directory path is not a directory.");
+            }
+            if (parentDirectory != null && !Files.exists(parentDirectory)) {
+                Files.createDirectories(parentDirectory);
+            }
+
+            try (PrintWriter writer = new PrintWriter(
+                    new FileWriter(SAVE_FILE.toFile(), StandardCharsets.UTF_8))) {
+                for (Task task : tasks) {
+                    writer.println(task.toFileString());
+                }
+                if (writer.checkError()) {
+                    throw new IOException("Unable to write the save file.");
+                }
+            }
+        } catch (IOException exception) {
+            throw new TopazException("Unable to save your tasks.");
+        } catch (SecurityException exception) {
+            throw new TopazException("Unable to access the save file.");
+        }
+    }
+
+    /**
+     * Loads the saved tasks, if the save file already exists.
+     *
+     * @return the tasks reconstructed from the save file
+     * @throws TopazException if the save file cannot be read
+     */
+    private static List<Task> loadTasks() throws TopazException {
+        List<Task> tasks = new ArrayList<>();
+        try {
+            if (!Files.exists(SAVE_FILE)) {
+                return tasks;
+            }
+            if (!Files.isRegularFile(SAVE_FILE)) {
+                throw new TopazException("The save file path is not a file.");
+            }
+
+            try (Scanner fileScanner = new Scanner(SAVE_FILE, StandardCharsets.UTF_8)) {
+                while (fileScanner.hasNextLine()) {
+                    String line = fileScanner.nextLine();
+                    if (!line.isBlank()) {
+                        tasks.add(createTask(line));
+                    }
+                }
+                if (fileScanner.ioException() != null) {
+                    throw new TopazException("Unable to load your saved tasks.");
+                }
+            }
+        } catch (IOException | SecurityException exception) {
+            throw new TopazException("Unable to load your saved tasks.");
+        }
+        return tasks;
+    }
+
+    /**
+     * Reconstructs one task from a line in the save file.
+     *
+     * @param line one task record
+     * @return the reconstructed task
+     * @throws TopazException if the record has an unsupported format
+     */
+    private static Task createTask(String line) throws TopazException {
+        String[] values = line.split(" \\| ", -1);
+        if (values.length < 3 || (!values[1].equals("0") && !values[1].equals("1"))) {
+            throw new TopazException("Unable to load a saved task.");
+        }
+        for (int i = 2; i < values.length; i++) {
+            if (values[i].isBlank() || values[i].contains("|")) {
+                throw new TopazException("Unable to load a saved task.");
+            }
+        }
+
+        Task task;
+        if (values.length == 3 && values[0].equals("T")) {
+            task = new Todo(values[2]);
+        } else if (values.length == 4 && values[0].equals("D")) {
+            task = new Deadline(values[2], values[3]);
+        } else if (values.length == 5 && values[0].equals("E")) {
+            task = new Event(values[2], values[3], values[4]);
+        } else {
+            throw new TopazException("Unable to load a saved task.");
+        }
+
+        if (values[1].equals("1")) {
+            task.markAsDone();
+        }
+        return task;
+    }
+
     private static int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
         String numberText = command.substring(action.length()).trim();
@@ -28,7 +140,55 @@ public class Topaz {
         if (trimmedText.isEmpty()) {
             throw new TopazException(message);
         }
+        if (trimmedText.contains("|")) {
+            throw new TopazException("Task details cannot contain the | character.");
+        }
         return trimmedText;
+    }
+
+    /** Adds a task and restores the list if saving fails. */
+    private static void addAndSaveTask(List<Task> tasks, Task task) throws TopazException {
+        tasks.add(task);
+        try {
+            saveTasks(tasks);
+        } catch (TopazException exception) {
+            tasks.remove(tasks.size() - 1);
+            throw exception;
+        }
+    }
+
+    /** Changes a task's completion state and restores it if saving fails. */
+    private static void updateTaskStatus(List<Task> tasks, int taskIndex, boolean isDone)
+            throws TopazException {
+        Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone();
+        if (isDone) {
+            task.markAsDone();
+        } else {
+            task.markAsNotDone();
+        }
+        try {
+            saveTasks(tasks);
+        } catch (TopazException exception) {
+            if (wasDone) {
+                task.markAsDone();
+            } else {
+                task.markAsNotDone();
+            }
+            throw exception;
+        }
+    }
+
+    /** Removes a task and restores it to its original position if saving fails. */
+    private static Task deleteAndSaveTask(List<Task> tasks, int taskIndex) throws TopazException {
+        Task task = tasks.remove(taskIndex);
+        try {
+            saveTasks(tasks);
+            return task;
+        } catch (TopazException exception) {
+            tasks.add(taskIndex, task);
+            throw exception;
+        }
     }
 
     public static void main(String[] args) {
@@ -40,13 +200,20 @@ public class Topaz {
                 + "  |_|\\___/| .__/ \\__,_|_| |_|     \n"
                 + "           |_|                      \n";
 
+        List<Task> tasks;
+        try {
+            tasks = loadTasks();
+        } catch (TopazException exception) {
+            System.out.println(" " + exception.getMessage());
+            return;
+        }
+
         System.out.println(separator);
         System.out.println(banner);
         System.out.println("Hello! I'm Topaz.");
         System.out.println("What can I do for you?");
         System.out.println(separator);
 
-        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
@@ -66,20 +233,19 @@ public class Topaz {
                     }
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
                     int taskIndex = parseTaskNumber(command, "mark", tasks.size());
-                    tasks.get(taskIndex).markAsDone();
+                    updateTaskStatus(tasks, taskIndex, true);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
                             + tasks.get(taskIndex).getDescription());
                 } else if (command.equals("unmark") || command.startsWith("unmark ")) {
                     int taskIndex = parseTaskNumber(command, "unmark", tasks.size());
-                    tasks.get(taskIndex).markAsNotDone();
+                    updateTaskStatus(tasks, taskIndex, false);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(taskIndex).getDisplayIcon() + " "
                             + tasks.get(taskIndex).getDescription());
                 } else if (command.equals("delete") || command.startsWith("delete ")) {
                     int taskIndex = parseTaskNumber(command, "delete", tasks.size());
-                    Task task = tasks.get(taskIndex);
-                    tasks.remove(taskIndex);
+                    Task task = deleteAndSaveTask(tasks, taskIndex);
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -87,7 +253,7 @@ public class Topaz {
                     String description = requireText(command.substring(4),
                             "The description of a todo cannot be empty.");
                     Task task = new Todo(description);
-                    tasks.add(task);
+                    addAndSaveTask(tasks, task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -105,7 +271,7 @@ public class Topaz {
                     String by = requireText(content.substring(byIndex + 5),
                             "The deadline time cannot be empty.");
                     Task task = new Deadline(description, by);
-                    tasks.add(task);
+                    addAndSaveTask(tasks, task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -131,7 +297,7 @@ public class Topaz {
                     String to = requireText(content.substring(toIndex + 5),
                             "The event end time cannot be empty.");
                     Task task = new Event(description, from, to);
-                    tasks.add(task);
+                    addAndSaveTask(tasks, task);
                     System.out.println(" Got it. I've added this task:");
                     System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");

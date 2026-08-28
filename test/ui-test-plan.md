@@ -25,6 +25,35 @@ Expected output:
 The `test-ui` skill runs each case in a fresh process and stops immediately at the
 first failure, showing the actual and expected output.
 
+Automated UI tests use a temporary save-file path so that they do not overwrite a
+user's `data/Topaz.txt` file.
+
+## Persistence integration check
+
+Aim: Verify that a fresh chatbot process loads saved tasks with their type, completion status, and time fields intact.
+
+Setup: Create `data/Topaz.txt` with the following contents before starting Topaz:
+
+```text
+D | 1 | return book | Sunday
+E | 0 | project meeting | Mon 2pm | 4pm
+```
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected output after startup:
+
+```text
+ Here are the tasks in your list:
+ 1.[D][X] return book (by: Sunday)
+ 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
 ### Test case: Interleaved task creation and invalid commands
 
 Aim: Verify that valid tasks are stored while invalid task commands do not change the list.
@@ -88,6 +117,107 @@ ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
+```
+
+### Test case: Reserved save-file delimiter
+
+Aim: Verify that task details containing `|` are rejected and do not change the task list, because `|` separates fields in the save file.
+
+Input:
+```text
+todo read | book
+list
+deadline return book /by Sun|day
+list
+event meeting /from 2|pm /to 4pm
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Task details cannot contain the | character.
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Test case: Save changed task list
+
+Aim: Verify that adding, marking, and deleting tasks saves the remaining task list to `data/Topaz.txt`.
+
+Input:
+```text
+todo read book
+mark 1
+deadline return book /by Sunday
+event project meeting /from Mon 2pm /to 4pm
+delete 1
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Sunday)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Noted. I've removed this task:
+   [T][X] read book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Expected `data/Topaz.txt` after this case:
+
+```text
+D | 0 | return book | Sunday
+E | 0 | project meeting | Mon 2pm | 4pm
 ```
 
 ### Test case: Interleaved mark, unmark, and invalid task numbers
@@ -298,6 +428,44 @@ ____________________________________________________________
  The event start time cannot be empty.
 ____________________________________________________________
  Here are the tasks in your list:
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Test case: First run without a save file
+
+Aim: Verify that Topaz starts with an empty task list and creates its save file when no saved data exists.
+
+Input:
+```text
+list
+todo first task
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] first task
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] first task
 ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
