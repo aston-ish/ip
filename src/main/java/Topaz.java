@@ -76,13 +76,18 @@ public class Topaz {
             String command = ui.readCommand();
 
             try {
+                Command simpleCommand = null;
                 if (command.equals("bye")) {
-                    ui.showGoodbye();
-                    break;
+                    simpleCommand = new ExitCommand();
+                } else if (command.equals("list")) {
+                    simpleCommand = new ListCommand();
                 }
 
-                if (command.equals("list")) {
-                    ui.showTaskList(tasks);
+                if (simpleCommand != null) {
+                    simpleCommand.execute(tasks, ui, storage);
+                    if (simpleCommand.isExit()) {
+                        break;
+                    }
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
                     int taskIndex = parser.parseTaskNumber(command, "mark", tasks.size());
                     updateTaskStatus(tasks, taskIndex, true);
