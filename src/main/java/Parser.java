@@ -32,6 +32,16 @@ public class Parser {
         return taskNumber - 1;
     }
 
+    /** Parses a mark command into a mark command object. */
+    public Command parseMarkCommand(String command, int taskCount) throws TopazException {
+        return new MarkCommand(parseTaskNumber(command, "mark", taskCount));
+    }
+
+    /** Parses an unmark command into an unmark command object. */
+    public Command parseUnmarkCommand(String command, int taskCount) throws TopazException {
+        return new UnmarkCommand(parseTaskNumber(command, "unmark", taskCount));
+    }
+
     /** Parses a todo command into a todo task. */
     public Task parseTodo(String command) throws TopazException {
         String description = requireText(command.substring(4),

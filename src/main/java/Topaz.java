@@ -26,28 +26,6 @@ public class Topaz {
         }
     }
 
-    /** Changes a task's completion state and restores it if saving fails. */
-    private void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone)
-            throws TopazException {
-        Task task = tasks.get(taskIndex);
-        boolean wasDone = task.isDone();
-        if (isDone) {
-            tasks.markAsDone(taskIndex);
-        } else {
-            tasks.markAsNotDone(taskIndex);
-        }
-        try {
-            storage.save(tasks.asList());
-        } catch (TopazException exception) {
-            if (wasDone) {
-                tasks.markAsDone(taskIndex);
-            } else {
-                tasks.markAsNotDone(taskIndex);
-            }
-            throw exception;
-        }
-    }
-
     /** Removes a task and restores it to its original position if saving fails. */
     private Task deleteAndSaveTask(TaskList tasks, int taskIndex) throws TopazException {
         Task task = tasks.remove(taskIndex);
@@ -89,13 +67,11 @@ public class Topaz {
                         break;
                     }
                 } else if (command.equals("mark") || command.startsWith("mark ")) {
-                    int taskIndex = parser.parseTaskNumber(command, "mark", tasks.size());
-                    updateTaskStatus(tasks, taskIndex, true);
-                    ui.showMarkedTask(tasks.get(taskIndex));
+                    Command markCommand = parser.parseMarkCommand(command, tasks.size());
+                    markCommand.execute(tasks, ui, storage);
                 } else if (command.equals("unmark") || command.startsWith("unmark ")) {
-                    int taskIndex = parser.parseTaskNumber(command, "unmark", tasks.size());
-                    updateTaskStatus(tasks, taskIndex, false);
-                    ui.showUnmarkedTask(tasks.get(taskIndex));
+                    Command unmarkCommand = parser.parseUnmarkCommand(command, tasks.size());
+                    unmarkCommand.execute(tasks, ui, storage);
                 } else if (command.equals("delete") || command.startsWith("delete ")) {
                     int taskIndex = parser.parseTaskNumber(command, "delete", tasks.size());
                     Task task = deleteAndSaveTask(tasks, taskIndex);
