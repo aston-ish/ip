@@ -433,6 +433,44 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Test case: First run without a save file
+
+Aim: Verify that Topaz starts with an empty task list and creates its save file when no saved data exists.
+
+Input:
+```text
+list
+todo first task
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Here are the tasks in your list:
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] first task
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[T][ ] first task
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
 ### Test case: Bare numbered commands and empty time fields
 
 Aim: Verify that missing task numbers and empty deadline or event time fields are rejected without changing existing tasks.

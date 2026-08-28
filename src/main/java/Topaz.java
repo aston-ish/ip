@@ -1,15 +1,18 @@
 import java.util.ArrayList;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Topaz {
-    private static final File SAVE_FILE = new File(
-            System.getProperty("topaz.dataFile", "./data/Topaz.txt"));
+    private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
+    private static final Path SAVE_FILE = Paths.get(
+            System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
 
     /**
      * Saves every task in the current list to the hard disk.
@@ -19,15 +22,17 @@ public class Topaz {
      */
     private static void saveTasks(List<Task> tasks) throws TopazException {
         try {
-            File parentDirectory = SAVE_FILE.getParentFile();
-            if (parentDirectory != null && parentDirectory.exists() && !parentDirectory.isDirectory()) {
+            Path parentDirectory = SAVE_FILE.getParent();
+            if (parentDirectory != null && Files.exists(parentDirectory)
+                    && !Files.isDirectory(parentDirectory)) {
                 throw new TopazException("The data directory path is not a directory.");
             }
-            if (parentDirectory != null && !parentDirectory.exists() && !parentDirectory.mkdirs()) {
-                throw new TopazException("Unable to create the data directory.");
+            if (parentDirectory != null && !Files.exists(parentDirectory)) {
+                Files.createDirectories(parentDirectory);
             }
 
-            try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE, StandardCharsets.UTF_8))) {
+            try (PrintWriter writer = new PrintWriter(
+                    new FileWriter(SAVE_FILE.toFile(), StandardCharsets.UTF_8))) {
                 for (Task task : tasks) {
                     writer.println(task.toFileString());
                 }
@@ -51,10 +56,10 @@ public class Topaz {
     private static List<Task> loadTasks() throws TopazException {
         List<Task> tasks = new ArrayList<>();
         try {
-            if (!SAVE_FILE.exists()) {
+            if (!Files.exists(SAVE_FILE)) {
                 return tasks;
             }
-            if (!SAVE_FILE.isFile()) {
+            if (!Files.isRegularFile(SAVE_FILE)) {
                 throw new TopazException("The save file path is not a file.");
             }
 
