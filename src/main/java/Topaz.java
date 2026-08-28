@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +8,8 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Topaz {
-    private static final File SAVE_FILE = new File("./data/Topaz.txt");
+    private static final File SAVE_FILE = new File(
+            System.getProperty("topaz.dataFile", "./data/Topaz.txt"));
 
     /**
      * Saves every task in the current list to the hard disk.
@@ -28,6 +30,59 @@ public class Topaz {
         } catch (IOException exception) {
             throw new TopazException("Unable to save your tasks.");
         }
+    }
+
+    /**
+     * Loads the saved tasks, if the save file already exists.
+     *
+     * @return the tasks reconstructed from the save file
+     * @throws TopazException if the save file cannot be read
+     */
+    private static List<Task> loadTasks() throws TopazException {
+        List<Task> tasks = new ArrayList<>();
+        if (!SAVE_FILE.exists()) {
+            return tasks;
+        }
+
+        try (Scanner fileScanner = new Scanner(SAVE_FILE)) {
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                if (!line.isBlank()) {
+                    tasks.add(createTask(line));
+                }
+            }
+        } catch (FileNotFoundException exception) {
+            throw new TopazException("Unable to load your saved tasks.");
+        }
+        return tasks;
+    }
+
+    /**
+     * Reconstructs one task from a line in the save file.
+     *
+     * @param line one task record
+     * @return the reconstructed task
+     * @throws TopazException if the record has an unsupported format
+     */
+    private static Task createTask(String line) throws TopazException {
+        String[] values = line.split(" \\| ", -1);
+        Task task;
+        if (values.length == 3 && values[0].equals("T")) {
+            task = new Todo(values[2]);
+        } else if (values.length == 4 && values[0].equals("D")) {
+            task = new Deadline(values[2], values[3]);
+        } else if (values.length == 5 && values[0].equals("E")) {
+            task = new Event(values[2], values[3], values[4]);
+        } else {
+            throw new TopazException("Unable to load a saved task.");
+        }
+
+        if (values[1].equals("1")) {
+            task.markAsDone();
+        } else if (!values[1].equals("0")) {
+            throw new TopazException("Unable to load a saved task.");
+        }
+        return task;
     }
 
     private static int parseTaskNumber(String command, String action, int taskCount)
@@ -67,13 +122,20 @@ public class Topaz {
                 + "  |_|\\___/| .__/ \\__,_|_| |_|     \n"
                 + "           |_|                      \n";
 
+        List<Task> tasks;
+        try {
+            tasks = loadTasks();
+        } catch (TopazException exception) {
+            System.out.println(" " + exception.getMessage());
+            return;
+        }
+
         System.out.println(separator);
         System.out.println(banner);
         System.out.println("Hello! I'm Topaz.");
         System.out.println("What can I do for you?");
         System.out.println(separator);
 
-        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();

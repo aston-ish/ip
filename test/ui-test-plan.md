@@ -25,6 +25,35 @@ Expected output:
 The `test-ui` skill runs each case in a fresh process and stops immediately at the
 first failure, showing the actual and expected output.
 
+Automated UI tests use a temporary save-file path so that they do not overwrite a
+user's `data/Topaz.txt` file.
+
+## Persistence integration check
+
+Aim: Verify that a fresh chatbot process loads saved tasks with their type, completion status, and time fields intact.
+
+Setup: Create `data/Topaz.txt` with the following contents before starting Topaz:
+
+```text
+D | 1 | return book | Sunday
+E | 0 | project meeting | Mon 2pm | 4pm
+```
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected output after startup:
+
+```text
+ Here are the tasks in your list:
+ 1.[D][X] return book (by: Sunday)
+ 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
 ### Test case: Interleaved task creation and invalid commands
 
 Aim: Verify that valid tasks are stored while invalid task commands do not change the list.
