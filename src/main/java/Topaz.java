@@ -1,8 +1,3 @@
-import java.util.ArrayList;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -10,126 +5,21 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.List;
 import java.util.Locale;
-import java.io.PrintWriter;
 
 public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
-    private static final Path SAVE_FILE = Paths.get(
-            System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
     private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
     private final Ui ui;
+    private final Storage storage;
 
     /** Creates Topaz with a console user interface. */
     public Topaz() {
         ui = new Ui();
-    }
-
-    /**
-     * Saves every task in the current list to the hard disk.
-     *
-     * @param tasks the tasks to save
-     * @throws TopazException if the save file cannot be created or written
-     */
-    private static void saveTasks(List<Task> tasks) throws TopazException {
-        try {
-            Path parentDirectory = SAVE_FILE.getParent();
-            if (parentDirectory != null && Files.exists(parentDirectory)
-                    && !Files.isDirectory(parentDirectory)) {
-                throw new TopazException("The data directory path is not a directory.");
-            }
-            if (parentDirectory != null && !Files.exists(parentDirectory)) {
-                Files.createDirectories(parentDirectory);
-            }
-
-            try (PrintWriter writer = new PrintWriter(
-                    new FileWriter(SAVE_FILE.toFile(), StandardCharsets.UTF_8))) {
-                for (Task task : tasks) {
-                    writer.println(task.toFileString());
-                }
-                if (writer.checkError()) {
-                    throw new IOException("Unable to write the save file.");
-                }
-            }
-        } catch (IOException exception) {
-            throw new TopazException("Unable to save your tasks.");
-        } catch (SecurityException exception) {
-            throw new TopazException("Unable to access the save file.");
-        }
-    }
-
-    /**
-     * Loads the saved tasks, if the save file already exists.
-     *
-     * @return the tasks reconstructed from the save file
-     * @throws TopazException if the save file cannot be read
-     */
-    private static List<Task> loadTasks() throws TopazException {
-        List<Task> tasks = new ArrayList<>();
-        try {
-            if (!Files.exists(SAVE_FILE)) {
-                return tasks;
-            }
-            if (!Files.isRegularFile(SAVE_FILE)) {
-                throw new TopazException("The save file path is not a file.");
-            }
-
-            try (Scanner fileScanner = new Scanner(SAVE_FILE, StandardCharsets.UTF_8)) {
-                while (fileScanner.hasNextLine()) {
-                    String line = fileScanner.nextLine();
-                    if (!line.isBlank()) {
-                        tasks.add(createTask(line));
-                    }
-                }
-                if (fileScanner.ioException() != null) {
-                    throw new TopazException("Unable to load your saved tasks.");
-                }
-            }
-        } catch (IOException | SecurityException exception) {
-            throw new TopazException("Unable to load your saved tasks.");
-        }
-        return tasks;
-    }
-
-    /**
-     * Reconstructs one task from a line in the save file.
-     *
-     * @param line one task record
-     * @return the reconstructed task
-     * @throws TopazException if the record has an unsupported format
-     */
-    private static Task createTask(String line) throws TopazException {
-        String[] values = line.split(" \\| ", -1);
-        if (values.length < 3 || (!values[1].equals("0") && !values[1].equals("1"))) {
-            throw new TopazException("Unable to load a saved task.");
-        }
-        for (int i = 2; i < values.length; i++) {
-            if (values[i].isBlank() || values[i].contains("|")) {
-                throw new TopazException("Unable to load a saved task.");
-            }
-        }
-
-        Task task;
-        if (values.length == 3 && values[0].equals("T")) {
-            task = new Todo(values[2]);
-        } else if (values.length == 4 && values[0].equals("D")) {
-            task = new Deadline(values[2], parseDateTime(values[3], "Unable to load a saved task."),
-                    hasTimeComponent(values[3]));
-        } else if (values.length == 5 && values[0].equals("E")) {
-            task = new Event(values[2], parseDateTime(values[3], "Unable to load a saved task."),
-                    parseDateTime(values[4], "Unable to load a saved task."),
-                    hasTimeComponent(values[3]), hasTimeComponent(values[4]));
-        } else {
-            throw new TopazException("Unable to load a saved task.");
-        }
-
-        if (values[1].equals("1")) {
-            task.markAsDone();
-        }
-        return task;
+        Path saveFile = Paths.get(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
+        storage = new Storage(saveFile);
     }
 
     /** Parses a supported date or date-time into a value that can be compared and saved reliably. */
@@ -186,10 +76,10 @@ public class Topaz {
     }
 
     /** Adds a task and restores the list if saving fails. */
-    private static void addAndSaveTask(TaskList tasks, Task task) throws TopazException {
+    private void addAndSaveTask(TaskList tasks, Task task) throws TopazException {
         tasks.add(task);
         try {
-            saveTasks(tasks.asList());
+            storage.save(tasks.asList());
         } catch (TopazException exception) {
             tasks.remove(tasks.size() - 1);
             throw exception;
@@ -197,7 +87,7 @@ public class Topaz {
     }
 
     /** Changes a task's completion state and restores it if saving fails. */
-    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone)
+    private void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone)
             throws TopazException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
@@ -207,7 +97,7 @@ public class Topaz {
             tasks.markAsNotDone(taskIndex);
         }
         try {
-            saveTasks(tasks.asList());
+            storage.save(tasks.asList());
         } catch (TopazException exception) {
             if (wasDone) {
                 tasks.markAsDone(taskIndex);
@@ -219,10 +109,10 @@ public class Topaz {
     }
 
     /** Removes a task and restores it to its original position if saving fails. */
-    private static Task deleteAndSaveTask(TaskList tasks, int taskIndex) throws TopazException {
+    private Task deleteAndSaveTask(TaskList tasks, int taskIndex) throws TopazException {
         Task task = tasks.remove(taskIndex);
         try {
-            saveTasks(tasks.asList());
+            storage.save(tasks.asList());
             return task;
         } catch (TopazException exception) {
             tasks.add(taskIndex, task);
@@ -234,7 +124,7 @@ public class Topaz {
     public void run() {
         TaskList tasks;
         try {
-            tasks = new TaskList(loadTasks());
+            tasks = new TaskList(storage.load());
         } catch (TopazException exception) {
             ui.showLoadingError(exception);
             return;
