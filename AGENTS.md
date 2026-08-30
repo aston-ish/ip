@@ -46,3 +46,23 @@ Maintain JUnit tests for approximately the highest-value 50% of methods, priorit
 complex, core, and business-critical logic. After every code change, update or add
 JUnit tests when the changed behavior affects those methods, and run the JUnit suite
 to verify that the coverage target and existing behavior remain supported.
+
+## SE-EDU Java coding standard
+
+All Java code in this project must follow the project skill
+`seedu-java-coding-standard`, based on the SE-EDU basic and intermediate Java coding
+conventions. Apply it when creating, reviewing, or refactoring code, including
+naming, layout, imports, control-flow braces, line length, encapsulation, and
+Javadoc requirements. Review and correct relevant standard violations in files
+affected by each code change, and run the project's tests afterward.
+
+## SE-EDU Git standard
+
+All future commits and branch names must follow the project skill
+`seedu-git-standard`, based on the SE-EDU Git conventions. Commit subjects must be
+meaningful, imperative, capitalized, free of a trailing period, and no longer than
+72 characters, with a preference for 50 characters or fewer. Non-trivial commits
+must have a blank-line-separated body wrapped at 72 characters that explains what
+changed and why. Branch names must be meaningful and use kebab case, with an issue
+number prefix when applicable. Review every commit message against these rules
+before committing.
