@@ -20,6 +20,13 @@ class TaskListTest {
     }
 
     @Test
+    void constructor_emptyInputList_createsEmptyTaskList() {
+        TaskList taskList = new TaskList(List.of());
+
+        assertEquals(0, taskList.size());
+    }
+
+    @Test
     void add_tasks_areStoredInInsertionOrder() {
         TaskList taskList = new TaskList();
         Task first = new Todo("first");
@@ -45,6 +52,16 @@ class TaskListTest {
         taskList.add(1, inserted);
 
         assertEquals(List.of(first, inserted, last), taskList.asList());
+    }
+
+    @Test
+    void addAtIndex_atEnd_appendsTask() {
+        TaskList taskList = new TaskList(List.of(new Todo("first")));
+        Task last = new Todo("last");
+
+        taskList.add(taskList.size(), last);
+
+        assertEquals(last, taskList.get(1));
     }
 
     @Test
@@ -89,5 +106,56 @@ class TaskListTest {
         assertThrows(UnsupportedOperationException.class,
                 () -> taskList.asList().add(new Todo("another")));
         assertEquals(1, taskList.size());
+    }
+
+    @Test
+    void asList_afterAdd_reflectsCurrentTaskList() {
+        TaskList taskList = new TaskList();
+        List<Task> view = taskList.asList();
+
+        taskList.add(new Todo("task"));
+
+        assertEquals(1, view.size());
+        assertEquals("task", view.get(0).getDescription());
+    }
+
+    @Test
+    void get_invalidIndex_throwsIndexOutOfBoundsException() {
+        TaskList taskList = new TaskList(List.of(new Todo("task")));
+
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.get(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.get(taskList.size()));
+    }
+
+    @Test
+    void addAtIndex_invalidIndex_throwsIndexOutOfBoundsException() {
+        TaskList taskList = new TaskList();
+
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> taskList.add(1, new Todo("task")));
+        assertThrows(IndexOutOfBoundsException.class,
+                () -> taskList.add(-1, new Todo("task")));
+    }
+
+    @Test
+    void remove_invalidIndex_throwsIndexOutOfBoundsException() {
+        TaskList taskList = new TaskList();
+
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.remove(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.remove(-1));
+    }
+
+    @Test
+    void markAsDone_invalidIndex_throwsIndexOutOfBoundsException() {
+        TaskList taskList = new TaskList();
+
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.markAsDone(0));
+    }
+
+    @Test
+    void markAsNotDone_invalidIndex_throwsIndexOutOfBoundsException() {
+        TaskList taskList = new TaskList();
+
+        assertThrows(IndexOutOfBoundsException.class, () -> taskList.markAsNotDone(0));
     }
 }
