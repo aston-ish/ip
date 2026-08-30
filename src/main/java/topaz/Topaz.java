@@ -9,6 +9,7 @@ import topaz.storage.Storage;
 import topaz.task.TaskList;
 import topaz.ui.Ui;
 
+/** Runs the Topaz command-line chatbot and coordinates its collaborators. */
 public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
     private final Ui ui;
