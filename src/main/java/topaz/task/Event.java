@@ -23,11 +23,13 @@ public class Event extends Task {
         this.hasToTime = hasToTime;
     }
 
+    /** Returns the event task type. */
     @Override
     public TaskType getTaskType() {
         return TaskType.EVENT;
     }
 
+    /** Returns the description together with the formatted event times. */
     @Override
     public String getDescription() {
         String formattedFrom = hasFromTime ? from.format(DISPLAY_FORMAT) : from.toLocalDate().format(
@@ -37,6 +39,7 @@ public class Event extends Task {
         return super.getDescription() + " (from: " + formattedFrom + " to: " + formattedTo + ")";
     }
 
+    /** Serializes this event for storage. */
     @Override
     public String toFileString() {
         String savedFrom = hasFromTime ? from.toString() : from.toLocalDate().toString();

@@ -18,11 +18,13 @@ public class Deadline extends Task {
         this.hasTime = hasTime;
     }
 
+    /** Returns the deadline task type. */
     @Override
     public TaskType getTaskType() {
         return TaskType.DEADLINE;
     }
 
+    /** Returns the description together with the formatted deadline. */
     @Override
     public String getDescription() {
         String formattedBy = hasTime ? by.format(DISPLAY_FORMAT) : by.toLocalDate().format(
@@ -30,6 +32,7 @@ public class Deadline extends Task {
         return super.getDescription() + " (by: " + formattedBy + ")";
     }
 
+    /** Serializes this deadline for storage. */
     @Override
     public String toFileString() {
         String savedBy = hasTime ? by.toString() : by.toLocalDate().toString();
