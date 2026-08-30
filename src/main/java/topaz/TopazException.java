@@ -1,3 +1,5 @@
+package topaz;
+
 /**
  * Represents an error caused by invalid user input.
  */

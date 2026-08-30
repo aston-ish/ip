@@ -1,5 +1,13 @@
+package topaz;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import topaz.command.Command;
+import topaz.parser.Parser;
+import topaz.storage.Storage;
+import topaz.task.TaskList;
+import topaz.ui.Ui;
 
 public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");

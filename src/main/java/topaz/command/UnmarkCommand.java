@@ -1,9 +1,17 @@
-/** Marks one task as done and saves the updated task list. */
-public class MarkCommand extends Command {
+package topaz.command;
+
+import topaz.TopazException;
+import topaz.storage.Storage;
+import topaz.task.Task;
+import topaz.task.TaskList;
+import topaz.ui.Ui;
+
+/** Marks one task as not done and saves the updated task list. */
+public class UnmarkCommand extends Command {
     private final int taskIndex;
 
     /** Creates a command for the given zero-based task index. */
-    public MarkCommand(int taskIndex) {
+    public UnmarkCommand(int taskIndex) {
         this.taskIndex = taskIndex;
     }
 
@@ -11,7 +19,7 @@ public class MarkCommand extends Command {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TopazException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
-        tasks.markAsDone(taskIndex);
+        tasks.markAsNotDone(taskIndex);
         try {
             storage.save(tasks.asList());
         } catch (TopazException exception) {
@@ -22,6 +30,6 @@ public class MarkCommand extends Command {
             }
             throw exception;
         }
-        ui.showMarkedTask(task);
+        ui.showUnmarkedTask(task);
     }
 }

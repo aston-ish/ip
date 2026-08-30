@@ -1,3 +1,5 @@
+package topaz.storage;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -13,6 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
+
+import topaz.TopazException;
+import topaz.task.Deadline;
+import topaz.task.Event;
+import topaz.task.Task;
+import topaz.task.Todo;
 
 /** Loads tasks from and saves tasks to the configured data file. */
 public class Storage {

@@ -1,3 +1,11 @@
+package topaz.command;
+
+import topaz.TopazException;
+import topaz.storage.Storage;
+import topaz.task.Task;
+import topaz.task.TaskList;
+import topaz.ui.Ui;
+
 /** Adds one task to the list and saves the updated task list. */
 public class AddCommand extends Command {
     private final Task task;
