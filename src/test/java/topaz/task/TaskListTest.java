@@ -120,6 +120,24 @@ class TaskListTest {
     }
 
     @Test
+    void find_keyword_returnsMatchingTasksCaseInsensitively() {
+        TaskList taskList = new TaskList(List.of(new Todo("read book"), new Todo("buy milk"),
+                new Todo("return book")));
+
+        List<Task> matchingTasks = taskList.find("BOOK");
+
+        assertEquals(List.of("read book", "return book"),
+                matchingTasks.stream().map(Task::getDescription).toList());
+    }
+
+    @Test
+    void find_unknownKeyword_returnsEmptyList() {
+        TaskList taskList = new TaskList(List.of(new Todo("read book")));
+
+        assertTrue(taskList.find("holiday").isEmpty());
+    }
+
+    @Test
     void get_invalidIndex_throwsIndexOutOfBoundsException() {
         TaskList taskList = new TaskList(List.of(new Todo("task")));
 

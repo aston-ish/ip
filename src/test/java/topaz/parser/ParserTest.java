@@ -9,6 +9,7 @@ import topaz.TopazException;
 import topaz.command.AddCommand;
 import topaz.command.Command;
 import topaz.command.ExitCommand;
+import topaz.command.FindCommand;
 import topaz.command.ListCommand;
 
 /** Tests the command parser's command recognition and input validation. */
@@ -23,6 +24,16 @@ class ParserTest {
     @Test
     void parse_list_returnsListCommand() throws TopazException {
         assertInstanceOf(ListCommand.class, parser.parse("list", 0));
+    }
+
+    @Test
+    void parse_find_returnsFindCommand() throws TopazException {
+        assertInstanceOf(FindCommand.class, parser.parse("find book", 0));
+    }
+
+    @Test
+    void parse_findWithoutKeyword_throwsException() {
+        assertThrows(TopazException.class, () -> parser.parse("find", 0));
     }
 
     @Test

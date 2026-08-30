@@ -12,6 +12,7 @@ import topaz.command.AddCommand;
 import topaz.command.Command;
 import topaz.command.DeleteCommand;
 import topaz.command.ExitCommand;
+import topaz.command.FindCommand;
 import topaz.command.ListCommand;
 import topaz.command.MarkCommand;
 import topaz.command.UnmarkCommand;
@@ -31,6 +32,8 @@ public class Parser {
             return new ExitCommand();
         } else if (command.equals("list")) {
             return new ListCommand();
+        } else if (command.equals("find") || command.startsWith("find ")) {
+            return parseFind(command);
         } else if (command.equals("mark") || command.startsWith("mark ")) {
             return parseMarkCommand(command, taskCount);
         } else if (command.equals("unmark") || command.startsWith("unmark ")) {
@@ -88,6 +91,12 @@ public class Parser {
         String description = requireText(command.substring(4),
                 "The description of a todo cannot be empty.");
         return new AddCommand(new Todo(description));
+    }
+
+    /** Parses a find command into a search command. */
+    private Command parseFind(String command) throws TopazException {
+        String keyword = requireText(command.substring(4), "Please provide a keyword after find.");
+        return new FindCommand(keyword);
     }
 
     /** Parses a deadline command into an add command. */
