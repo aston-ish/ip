@@ -39,3 +39,10 @@ Do not commit or push unless explicitly asked.
 After every code update, review `test/ui-test-plan.md` and add or revise test cases when the change affects command-line UI behavior. 
 Then invoke the project-specific `test-ui` skill to run the plan. If the plan has no applicable cases, record the reason in the plan 
 or report the limitation clearly; do not silently skip the skill invocation.
+
+## JUnit coverage after code updates
+
+Maintain JUnit tests for approximately the highest-value 50% of methods, prioritizing
+complex, core, and business-critical logic. After every code change, update or add
+JUnit tests when the changed behavior affects those methods, and run the JUnit suite
+to verify that the coverage target and existing behavior remain supported.
