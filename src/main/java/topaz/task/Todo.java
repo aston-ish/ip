@@ -1,3 +1,5 @@
+package topaz.task;
+
 /** Represents a basic todo task. */
 public class Todo extends Task {
     /** Creates an incomplete todo task. */

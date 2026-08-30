@@ -1,3 +1,5 @@
+package topaz.task;
+
 /**
  * Represents a task entered by the user.
  */

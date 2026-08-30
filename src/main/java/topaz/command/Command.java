@@ -1,3 +1,10 @@
+package topaz.command;
+
+import topaz.TopazException;
+import topaz.storage.Storage;
+import topaz.task.TaskList;
+import topaz.ui.Ui;
+
 /** Represents an operation requested by the user. */
 public abstract class Command {
     /** Executes this command using the application's current collaborators. */

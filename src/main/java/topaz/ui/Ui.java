@@ -1,4 +1,10 @@
+package topaz.ui;
+
 import java.util.Scanner;
+
+import topaz.TopazException;
+import topaz.task.Task;
+import topaz.task.TaskList;
 
 /** Handles console input and all messages shown to the user. */
 public class Ui {

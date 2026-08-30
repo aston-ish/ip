@@ -1,3 +1,5 @@
+package topaz.task;
+
 /**
  * Identifies the kind of task and its display icon.
  */
