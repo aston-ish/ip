@@ -119,6 +119,55 @@ ____________________________________________________________
 ____________________________________________________________
 ```
 
+### Test case: Find tasks by keyword
+
+Aim: Verify that find returns matching tasks in list order and rejects a missing keyword.
+
+Input:
+```text
+todo read book
+deadline return book /by 2026-12-07
+todo buy milk
+find book
+find
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [D][ ] return book (by: Dec 07 2026)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [T][ ] buy milk
+ Now you have 3 tasks in the list.
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[T][ ] read book
+ 2.[D][ ] return book (by: Dec 07 2026)
+____________________________________________________________
+ Please provide a keyword after find.
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
 ### Test case: Reserved save-file delimiter
 
 Aim: Verify that task details containing `|` are rejected and do not change the task list, because `|` separates fields in the save file.

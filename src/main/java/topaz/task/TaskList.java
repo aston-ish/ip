@@ -3,6 +3,7 @@ package topaz.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /** Stores the tasks currently managed by Topaz. */
 public class TaskList {
@@ -56,5 +57,17 @@ public class TaskList {
     /** Returns a read-only view of the tasks for display or storage. */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
+    }
+
+    /** Returns tasks whose descriptions contain the keyword, ignoring letter case. */
+    public List<Task> find(String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ENGLISH);
+        List<Task> matchingTasks = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().toLowerCase(Locale.ENGLISH).contains(normalizedKeyword)) {
+                matchingTasks.add(task);
+            }
+        }
+        return matchingTasks;
     }
 }
