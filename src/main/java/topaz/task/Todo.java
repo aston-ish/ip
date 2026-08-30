@@ -7,11 +7,13 @@ public class Todo extends Task {
         super(description);
     }
 
+    /** Returns the todo task type. */
     @Override
     public TaskType getTaskType() {
         return TaskType.TODO;
     }
 
+    /** Serializes this todo for storage. */
     @Override
     public String toFileString() {
         return "T | " + (isDone() ? "1" : "0") + " | " + getDescription();

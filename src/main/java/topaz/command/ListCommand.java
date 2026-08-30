@@ -6,6 +6,7 @@ import topaz.ui.Ui;
 
 /** Displays the current task list. */
 public class ListCommand extends Command {
+    /** Displays all tasks currently in the list. */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         ui.showTaskList(tasks);
