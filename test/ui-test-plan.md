@@ -1,5 +1,10 @@
 # UI Test Plan
 
+The tutorial change launches the JavaFX Hello World window by default rather than
+the command-line chatbot. The existing command-line test cases remain applicable
+when `topaz.Topaz` is run directly, but the JavaFX window cannot be verified by
+this command-line test plan.
+
 Record every requested command-line UI test case here before running the test session.
 The expected output must match stdout exactly, including prompts, separators, spaces,
 and line breaks.
