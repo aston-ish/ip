@@ -17,12 +17,16 @@ public abstract class Task {
         this.isDone = false;
     }
 
-    /** Marks this task as done. */
+    /**
+     * Marks this task as done.
+     */
     public void markAsDone() {
         isDone = true;
     }
 
-    /** Marks this task as not done. */
+    /**
+     * Marks this task as not done.
+     */
     public void markAsNotDone() {
         isDone = false;
     }
@@ -54,7 +58,11 @@ public abstract class Task {
         return isDone;
     }
 
-    /** Returns this task's type. */
+    /**
+     * Returns this task's type.
+     *
+     * @return the task type
+     */
     public abstract TaskType getTaskType();
 
     /**

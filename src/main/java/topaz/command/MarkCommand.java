@@ -6,11 +6,17 @@ import topaz.task.Task;
 import topaz.task.TaskList;
 import topaz.ui.Ui;
 
-/** Marks one task as done and saves the updated task list. */
+/**
+ * Marks one task as done and saves the updated task list.
+ */
 public class MarkCommand extends Command {
     private final int taskIndex;
 
-    /** Creates a command for the given zero-based task index. */
+    /**
+     * Creates a command for the given zero-based task index.
+     *
+     * @param taskIndex the zero-based index of the task to mark
+     */
     public MarkCommand(int taskIndex) {
         this.taskIndex = taskIndex;
     }

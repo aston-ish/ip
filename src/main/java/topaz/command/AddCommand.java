@@ -6,11 +6,17 @@ import topaz.task.Task;
 import topaz.task.TaskList;
 import topaz.ui.Ui;
 
-/** Adds one task to the list and saves the updated task list. */
+/**
+ * Adds one task to the list and saves the updated task list.
+ */
 public class AddCommand extends Command {
     private final Task task;
 
-    /** Creates a command that adds the given task. */
+    /**
+     * Creates a command that adds the given task.
+     *
+     * @param task the task to add
+     */
     public AddCommand(Task task) {
         this.task = task;
     }

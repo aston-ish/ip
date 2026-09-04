@@ -6,11 +6,17 @@ import topaz.task.Task;
 import topaz.task.TaskList;
 import topaz.ui.Ui;
 
-/** Removes one task from the list and saves the updated task list. */
+/**
+ * Removes one task from the list and saves the updated task list.
+ */
 public class DeleteCommand extends Command {
     private final int taskIndex;
 
-    /** Creates a command for the given zero-based task index. */
+    /**
+     * Creates a command for the given zero-based task index.
+     *
+     * @param taskIndex the zero-based index of the task to delete
+     */
     public DeleteCommand(int taskIndex) {
         this.taskIndex = taskIndex;
     }

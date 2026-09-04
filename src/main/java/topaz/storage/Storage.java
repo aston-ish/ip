@@ -22,19 +22,30 @@ import topaz.task.Event;
 import topaz.task.Task;
 import topaz.task.Todo;
 
-/** Loads tasks from and saves tasks to the configured data file. */
+/**
+ * Loads tasks from and saves tasks to the configured data file.
+ */
 public class Storage {
     private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
     private final Path saveFile;
 
-    /** Creates storage that uses the given file path. */
+    /**
+     * Creates storage that uses the given file path.
+     *
+     * @param saveFile the path of the task data file
+     */
     public Storage(Path saveFile) {
         this.saveFile = saveFile;
     }
 
-    /** Saves every task in the current list to the data file. */
+    /**
+     * Saves every task in the current list to the data file.
+     *
+     * @param tasks the tasks to save
+     * @throws TopazException if the data file cannot be written
+     */
     public void save(List<Task> tasks) throws TopazException {
         try {
             Path parentDirectory = saveFile.getParent();
@@ -62,7 +73,12 @@ public class Storage {
         }
     }
 
-    /** Loads saved tasks, returning an empty list when the data file does not exist. */
+    /**
+     * Loads saved tasks, returning an empty list when the data file does not exist.
+     *
+     * @return the tasks loaded from the data file
+     * @throws TopazException if the data file cannot be read or contains invalid data
+     */
     public List<Task> load() throws TopazException {
         List<Task> tasks = new ArrayList<>();
         try {
@@ -90,7 +106,9 @@ public class Storage {
         return tasks;
     }
 
-    /** Reconstructs one task from a line in the data file. */
+    /**
+     * Reconstructs one task from a line in the data file.
+     */
     private Task createTask(String line) throws TopazException {
         String[] values = line.split(" \\| ", -1);
         if (values.length < 3 || (!values[1].equals("0") && !values[1].equals("1"))) {
@@ -120,7 +138,9 @@ public class Storage {
         return task;
     }
 
-    /** Parses a date value stored in the data file. */
+    /**
+     * Parses a date value stored in the data file.
+     */
     private LocalDateTime parseDateTime(String text) throws TopazException {
         try {
             return LocalDateTime.parse(text, DATE_TIME_INPUT_FORMAT);
@@ -137,7 +157,9 @@ public class Storage {
         }
     }
 
-    /** Returns whether a stored date value includes a time component. */
+    /**
+     * Returns whether a stored date value includes a time component.
+     */
     private boolean hasTimeComponent(String text) {
         return !text.matches("\\d{4}-\\d{2}-\\d{2}");
     }
