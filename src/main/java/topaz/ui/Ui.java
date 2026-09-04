@@ -2,6 +2,7 @@ package topaz.ui;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Consumer;
 
 import topaz.TopazException;
 import topaz.task.Task;
@@ -20,18 +21,33 @@ public class Ui {
             + "           |_|                      \n";
 
     private final Scanner scanner;
+    private final Consumer<String> output;
 
     /**
      * Creates a UI that reads commands from the standard input stream.
      */
     public Ui() {
         scanner = new Scanner(System.in);
+        output = System.out::println;
+    }
+
+    /**
+     * Creates a UI that appends messages to the given response.
+     *
+     * @param response the response that receives UI messages
+     */
+    public Ui(StringBuilder response) {
+        scanner = null;
+        output = message -> response.append(message).append(System.lineSeparator());
     }
 
     /**
      * Returns whether another command is available from the user.
      */
     public boolean hasNextCommand() {
+        if (scanner == null) {
+            throw new IllegalStateException("This UI does not read console commands.");
+        }
         return scanner.hasNextLine();
     }
 
@@ -39,6 +55,9 @@ public class Ui {
      * Reads the next command from the user.
      */
     public String readCommand() {
+        if (scanner == null) {
+            throw new IllegalStateException("This UI does not read console commands.");
+        }
         return scanner.nextLine();
     }
 
@@ -46,11 +65,11 @@ public class Ui {
      * Shows the application greeting.
      */
     public void showWelcome() {
-        System.out.println(SEPARATOR);
-        System.out.println(BANNER);
-        System.out.println("Hello! I'm Topaz.");
-        System.out.println("What can I do for you?");
-        System.out.println(SEPARATOR);
+        output.accept(SEPARATOR);
+        output.accept(BANNER);
+        output.accept("Hello! I'm Topaz.");
+        output.accept("What can I do for you?");
+        output.accept(SEPARATOR);
     }
 
     /**
@@ -59,7 +78,7 @@ public class Ui {
      * @param exception the startup error to display
      */
     public void showLoadingError(TopazException exception) {
-        System.out.println(" " + exception.getMessage());
+        output.accept(" " + exception.getMessage());
     }
 
     /**
@@ -68,9 +87,9 @@ public class Ui {
      * @param tasks the task list to display
      */
     public void showTaskList(TaskList tasks) {
-        System.out.println(" Here are the tasks in your list:");
+        output.accept(" Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
+            output.accept(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
                     + tasks.get(i).getDescription());
         }
     }
@@ -81,10 +100,10 @@ public class Ui {
      * @param matchingTasks the matching tasks to display
      */
     public void showMatchingTasks(List<Task> matchingTasks) {
-        System.out.println(" Here are the matching tasks in your list:");
+        output.accept(" Here are the matching tasks in your list:");
         for (int i = 0; i < matchingTasks.size(); i++) {
             Task task = matchingTasks.get(i);
-            System.out.println(" " + (i + 1) + "." + task.getDisplayIcon() + " "
+            output.accept(" " + (i + 1) + "." + task.getDisplayIcon() + " "
                     + task.getDescription());
         }
     }
@@ -96,9 +115,9 @@ public class Ui {
      * @param taskCount the number of tasks after adding the task
      */
     public void showAddedTask(Task task, int taskCount) {
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
-        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        output.accept(" Got it. I've added this task:");
+        output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
+        output.accept(" Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
@@ -107,8 +126,8 @@ public class Ui {
      * @param task the task that was marked as done
      */
     public void showMarkedTask(Task task) {
-        System.out.println(" Nice! I've marked this task as done:");
-        System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
+        output.accept(" Nice! I've marked this task as done:");
+        output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
     }
 
     /**
@@ -117,8 +136,8 @@ public class Ui {
      * @param task the task that was marked as not done
      */
     public void showUnmarkedTask(Task task) {
-        System.out.println(" OK, I've marked this task as not done yet:");
-        System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
+        output.accept(" OK, I've marked this task as not done yet:");
+        output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
     }
 
     /**
@@ -128,9 +147,9 @@ public class Ui {
      * @param taskCount the number of tasks remaining after removal
      */
     public void showDeletedTask(Task task, int taskCount) {
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + task.getDisplayIcon() + " " + task.getDescription());
-        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        output.accept(" Noted. I've removed this task:");
+        output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
+        output.accept(" Now you have " + taskCount + " tasks in the list.");
     }
 
     /**
@@ -139,21 +158,21 @@ public class Ui {
      * @param exception the command error to display
      */
     public void showError(TopazException exception) {
-        System.out.println(" " + exception.getMessage());
+        output.accept(" " + exception.getMessage());
     }
 
     /**
      * Shows the standard separator below a response.
      */
     public void showSeparator() {
-        System.out.println(SEPARATOR);
+        output.accept(SEPARATOR);
     }
 
     /**
      * Shows the goodbye message and closing separator.
      */
     public void showGoodbye() {
-        System.out.println(" Bye. Hope to see you again soon!");
+        output.accept(" Bye. Hope to see you again soon!");
         showSeparator();
     }
 }

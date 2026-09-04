@@ -7,11 +7,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import topaz.Topaz;
 
 /**
  * Displays the Topaz graphical user interface.
  */
 public class Main extends Application {
+    private final Topaz topaz = new Topaz();
 
     /**
      * Creates and displays the application window.
@@ -25,6 +27,7 @@ public class Main extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("Topaz");
         stage.setScene(scene);
+        fxmlLoader.<MainWindow>getController().setTopaz(topaz);
         stage.show();
     }
 }

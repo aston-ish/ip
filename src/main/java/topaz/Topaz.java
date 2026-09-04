@@ -17,13 +17,22 @@ public class Topaz {
     private final Ui ui;
     private final Storage storage;
     private final Parser parser;
+    private TaskList tasks;
 
     /**
      * Creates Topaz with a console user interface.
      */
     public Topaz() {
+        this(Paths.get(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString())));
+    }
+
+    /**
+     * Creates Topaz with the specified save file.
+     *
+     * @param saveFile the file used to store tasks
+     */
+    Topaz(Path saveFile) {
         ui = new Ui();
-        Path saveFile = Paths.get(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
         storage = new Storage(saveFile);
         parser = new Parser();
     }
@@ -32,9 +41,8 @@ public class Topaz {
      * Runs the chatbot until the user enters the bye command.
      */
     public void run() {
-        TaskList tasks;
         try {
-            tasks = new TaskList(storage.load());
+            loadTasks();
         } catch (TopazException exception) {
             ui.showLoadingError(exception);
             return;
@@ -56,6 +64,36 @@ public class Topaz {
             }
 
             ui.showSeparator();
+        }
+    }
+
+    /**
+     * Processes one command and returns Topaz's response for the graphical interface.
+     *
+     * @param input the command entered by the user
+     * @return the response generated for the command
+     */
+    public String getResponse(String input) {
+        StringBuilder response = new StringBuilder();
+        Ui responseUi = new Ui(response);
+        try {
+            loadTasks();
+            Command command = parser.parse(input, tasks.size());
+            command.execute(tasks, responseUi, storage);
+        } catch (TopazException exception) {
+            responseUi.showError(exception);
+        }
+        return response.toString().stripTrailing();
+    }
+
+    /**
+     * Loads the saved tasks the first time Topaz needs them.
+     *
+     * @throws TopazException if the saved task list cannot be loaded
+     */
+    private void loadTasks() throws TopazException {
+        if (tasks == null) {
+            tasks = new TaskList(storage.load());
         }
     }
 
