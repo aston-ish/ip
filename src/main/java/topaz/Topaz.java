@@ -18,6 +18,7 @@ public class Topaz {
     private final Storage storage;
     private final Parser parser;
     private TaskList tasks;
+    private boolean exitRequested;
 
     /**
      * Creates Topaz with a console user interface.
@@ -80,10 +81,20 @@ public class Topaz {
             loadTasks();
             Command command = parser.parse(input, tasks.size());
             command.execute(tasks, responseUi, storage);
+            exitRequested = command.isExit();
         } catch (TopazException exception) {
             responseUi.showError(exception);
         }
         return response.toString().stripTrailing();
+    }
+
+    /**
+     * Returns whether the user has ended the current graphical session.
+     *
+     * @return true if the bye command was processed
+     */
+    public boolean isExitRequested() {
+        return exitRequested;
     }
 
     /**

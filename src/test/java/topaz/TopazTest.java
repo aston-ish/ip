@@ -34,4 +34,14 @@ class TopazTest {
 
         assertTrue(response.contains("I don't know what that means"));
     }
+
+    @Test
+    void getResponse_bye_marksSessionAsEnded() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+
+        String response = topaz.getResponse("bye");
+
+        assertTrue(response.contains("Hope to see you again soon"));
+        assertTrue(topaz.isExitRequested());
+    }
 }

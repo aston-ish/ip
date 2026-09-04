@@ -10,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 /**
@@ -19,12 +21,16 @@ public class DialogBox extends HBox {
     @FXML
     private Label dialog;
 
+    @FXML
+    private ImageView displayPicture;
+
     /**
      * Creates a dialog box containing the given message.
      *
      * @param text the message displayed in the dialog box
+     * @param image the speaker's avatar
      */
-    private DialogBox(String text) {
+    private DialogBox(String text, Image image) {
         try {
             FXMLLoader loader = new FXMLLoader(DialogBox.class.getResource("/view/DialogBox.fxml"));
             loader.setController(this);
@@ -35,6 +41,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        displayPicture.setImage(image);
     }
 
     /**
@@ -52,20 +59,22 @@ public class DialogBox extends HBox {
      * Creates a right-aligned dialog box for a user message.
      *
      * @param text the user's message
+     * @param image the user's avatar
      * @return the created dialog box
      */
-    public static DialogBox getUserDialog(String text) {
-        return new DialogBox(text);
+    public static DialogBox getUserDialog(String text, Image image) {
+        return new DialogBox(text, image);
     }
 
     /**
      * Creates a left-aligned dialog box for a Topaz response.
      *
      * @param text Topaz's response
+     * @param image Topaz's avatar
      * @return the created dialog box
      */
-    public static DialogBox getTopazDialog(String text) {
-        DialogBox dialogBox = new DialogBox(text);
+    public static DialogBox getTopazDialog(String text, Image image) {
+        DialogBox dialogBox = new DialogBox(text, image);
         dialogBox.flip();
         return dialogBox;
     }

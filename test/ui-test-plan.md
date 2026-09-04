@@ -6,7 +6,10 @@ when `topaz.Topaz` is run directly. This plan cannot automate the current GUI
 iteration; manually verify that submitting text with Enter or Send adds a
 right-aligned user dialog and a left-aligned response dialog. Verify that `todo`,
 `deadline`, `event`, `list`, `find`, `mark`, `unmark`, and `delete` produce the
-same responses and save task changes as their command-line equivalents.
+same responses and save task changes as their command-line equivalents. Verify
+that a welcome dialog appears on launch, each dialog uses the correct speaker
+avatar, and `bye` disables both the input field and Send button after displaying
+the farewell message.
 
 Record every requested command-line UI test case here before running the test session.
 The expected output must match stdout exactly, including prompts, separators, spaces,
