@@ -1,0 +1,12 @@
+.label {
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.user-dialog {
+    -fx-background-color: #dbeafe;
+}
+
+.topaz-dialog {
+    -fx-background-color: #dcfce7;
+}
