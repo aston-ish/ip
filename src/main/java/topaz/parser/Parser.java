@@ -20,13 +20,22 @@ import topaz.task.Deadline;
 import topaz.task.Event;
 import topaz.task.Todo;
 
-/** Parses user commands and creates tasks from valid command arguments. */
+/**
+ * Parses user commands and creates tasks from valid command arguments.
+ */
 public class Parser {
     private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
                     .withResolverStyle(ResolverStyle.STRICT);
 
-    /** Parses one complete user command into the command object that performs it. */
+    /**
+     * Parses one complete user command into the command object that performs it.
+     *
+     * @param command the complete user command
+     * @param taskCount the number of tasks currently in the list
+     * @return the parsed command
+     * @throws TopazException if the command or its arguments are invalid
+     */
     public Command parse(String command, int taskCount) throws TopazException {
         if (command.equals("bye")) {
             return new ExitCommand();
@@ -50,7 +59,9 @@ public class Parser {
         throw new TopazException("I'm sorry, but I don't know what that means.");
     }
 
-    /** Parses a numbered command and returns its zero-based task index. */
+    /**
+     * Parses a numbered command and returns its zero-based task index.
+     */
     private int parseTaskNumber(String command, String action, int taskCount)
             throws TopazException {
         String numberText = command.substring(action.length()).trim();
@@ -71,35 +82,47 @@ public class Parser {
         return taskNumber - 1;
     }
 
-    /** Parses a mark command into a mark command object. */
+    /**
+     * Parses a mark command into a mark command object.
+     */
     private Command parseMarkCommand(String command, int taskCount) throws TopazException {
         return new MarkCommand(parseTaskNumber(command, "mark", taskCount));
     }
 
-    /** Parses an unmark command into an unmark command object. */
+    /**
+     * Parses an unmark command into an unmark command object.
+     */
     private Command parseUnmarkCommand(String command, int taskCount) throws TopazException {
         return new UnmarkCommand(parseTaskNumber(command, "unmark", taskCount));
     }
 
-    /** Parses a delete command into a delete command object. */
+    /**
+     * Parses a delete command into a delete command object.
+     */
     private Command parseDeleteCommand(String command, int taskCount) throws TopazException {
         return new DeleteCommand(parseTaskNumber(command, "delete", taskCount));
     }
 
-    /** Parses a todo command into an add command. */
+    /**
+     * Parses a todo command into an add command.
+     */
     private Command parseTodo(String command) throws TopazException {
         String description = requireText(command.substring(4),
                 "The description of a todo cannot be empty.");
         return new AddCommand(new Todo(description));
     }
 
-    /** Parses a find command into a search command. */
+    /**
+     * Parses a find command into a search command.
+     */
     private Command parseFind(String command) throws TopazException {
         String keyword = requireText(command.substring(4), "Please provide a keyword after find.");
         return new FindCommand(keyword);
     }
 
-    /** Parses a deadline command into an add command. */
+    /**
+     * Parses a deadline command into an add command.
+     */
     private Command parseDeadline(String command) throws TopazException {
         String content = command.substring(8).trim();
         int byIndex = content.indexOf(" /by ");
@@ -118,7 +141,9 @@ public class Parser {
         return new AddCommand(new Deadline(description, byDateTime, hasTimeComponent(by)));
     }
 
-    /** Parses an event command into an add command. */
+    /**
+     * Parses an event command into an add command.
+     */
     private Command parseEvent(String command) throws TopazException {
         String content = command.substring(5).trim();
         int fromIndex = content.indexOf(" /from ");
@@ -148,7 +173,9 @@ public class Parser {
                 hasTimeComponent(from), hasTimeComponent(to)));
     }
 
-    /** Requires a non-empty text value that can be represented in the save file. */
+    /**
+     * Requires a non-empty text value that can be represented in the save file.
+     */
     private String requireText(String text, String message) throws TopazException {
         String trimmedText = text.trim();
         if (trimmedText.isEmpty()) {
@@ -160,7 +187,9 @@ public class Parser {
         return trimmedText;
     }
 
-    /** Parses a supported date or date-time from user input. */
+    /**
+     * Parses a supported date or date-time from user input.
+     */
     private LocalDateTime parseDateTime(String text, String errorMessage) throws TopazException {
         try {
             return LocalDateTime.parse(text, DATE_TIME_INPUT_FORMAT);
@@ -177,7 +206,9 @@ public class Parser {
         }
     }
 
-    /** Returns whether a date string includes a time component. */
+    /**
+     * Returns whether a date string includes a time component.
+     */
     private boolean hasTimeComponent(String text) {
         return !text.matches("\\d{4}-\\d{2}-\\d{2}");
     }

@@ -9,14 +9,18 @@ import topaz.storage.Storage;
 import topaz.task.TaskList;
 import topaz.ui.Ui;
 
-/** Runs the Topaz command-line chatbot and coordinates its collaborators. */
+/**
+ * Runs the Topaz command-line chatbot and coordinates its collaborators.
+ */
 public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
     private final Ui ui;
     private final Storage storage;
     private final Parser parser;
 
-    /** Creates Topaz with a console user interface. */
+    /**
+     * Creates Topaz with a console user interface.
+     */
     public Topaz() {
         ui = new Ui();
         Path saveFile = Paths.get(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
@@ -24,7 +28,9 @@ public class Topaz {
         parser = new Parser();
     }
 
-    /** Runs the chatbot until the user enters the bye command. */
+    /**
+     * Runs the chatbot until the user enters the bye command.
+     */
     public void run() {
         TaskList tasks;
         try {
@@ -53,7 +59,11 @@ public class Topaz {
         }
     }
 
-    /** Starts the Topaz chatbot. */
+    /**
+     * Starts the Topaz chatbot.
+     *
+     * @param args command-line arguments, which are not used
+     */
     public static void main(String[] args) {
         new Topaz().run();
     }
