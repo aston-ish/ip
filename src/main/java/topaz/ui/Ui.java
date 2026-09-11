@@ -69,10 +69,7 @@ public class Ui {
      */
     public void showTaskList(TaskList tasks) {
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + "." + tasks.get(i).getDisplayIcon() + " "
-                    + tasks.get(i).getDescription());
-        }
+        showNumberedTasks(tasks.asList());
     }
 
     /**
@@ -82,8 +79,17 @@ public class Ui {
      */
     public void showMatchingTasks(List<Task> matchingTasks) {
         System.out.println(" Here are the matching tasks in your list:");
-        for (int i = 0; i < matchingTasks.size(); i++) {
-            Task task = matchingTasks.get(i);
+        showNumberedTasks(matchingTasks);
+    }
+
+    /**
+     * Shows the supplied tasks with one-based numbers.
+     *
+     * @param tasks the tasks to display
+     */
+    private void showNumberedTasks(List<Task> tasks) {
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
             System.out.println(" " + (i + 1) + "." + task.getDisplayIcon() + " "
                     + task.getDescription());
         }
