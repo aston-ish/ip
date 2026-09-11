@@ -6,14 +6,8 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 
 import topaz.TopazException;
@@ -21,14 +15,12 @@ import topaz.task.Deadline;
 import topaz.task.Event;
 import topaz.task.Task;
 import topaz.task.Todo;
+import topaz.util.DateTimeParser;
 
 /**
  * Loads tasks from and saves tasks to the configured data file.
  */
 public class Storage {
-    private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
-            DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
-                    .withResolverStyle(ResolverStyle.STRICT);
     private final Path saveFile;
 
     /**
@@ -124,10 +116,12 @@ public class Storage {
         if (values.length == 3 && values[0].equals("T")) {
             task = new Todo(values[2]);
         } else if (values.length == 4 && values[0].equals("D")) {
-            task = new Deadline(values[2], parseDateTime(values[3]), hasTimeComponent(values[3]));
+            task = new Deadline(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
+                    DateTimeParser.hasTimeComponent(values[3]));
         } else if (values.length == 5 && values[0].equals("E")) {
-            task = new Event(values[2], parseDateTime(values[3]), parseDateTime(values[4]),
-                    hasTimeComponent(values[3]), hasTimeComponent(values[4]));
+            task = new Event(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
+                    DateTimeParser.parse(values[4], "Unable to load a saved task."),
+                    DateTimeParser.hasTimeComponent(values[3]), DateTimeParser.hasTimeComponent(values[4]));
         } else {
             throw new TopazException("Unable to load a saved task.");
         }
@@ -138,29 +132,4 @@ public class Storage {
         return task;
     }
 
-    /**
-     * Parses a date value stored in the data file.
-     */
-    private LocalDateTime parseDateTime(String text) throws TopazException {
-        try {
-            return LocalDateTime.parse(text, DATE_TIME_INPUT_FORMAT);
-        } catch (DateTimeParseException exception) {
-            try {
-                return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
-            } catch (DateTimeParseException ignoredException) {
-                try {
-                    return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                } catch (DateTimeParseException ignoredAgainException) {
-                    throw new TopazException("Unable to load a saved task.");
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns whether a stored date value includes a time component.
-     */
-    private boolean hasTimeComponent(String text) {
-        return !text.matches("\\d{4}-\\d{2}-\\d{2}");
-    }
 }

@@ -1,11 +1,6 @@
 package topaz.parser;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.Locale;
 
 import topaz.TopazException;
 import topaz.command.AddCommand;
@@ -19,15 +14,12 @@ import topaz.command.UnmarkCommand;
 import topaz.task.Deadline;
 import topaz.task.Event;
 import topaz.task.Todo;
+import topaz.util.DateTimeParser;
 
 /**
  * Parses user commands and creates tasks from valid command arguments.
  */
 public class Parser {
-    private static final DateTimeFormatter DATE_TIME_INPUT_FORMAT =
-            DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
-                    .withResolverStyle(ResolverStyle.STRICT);
-
     /**
      * Parses one complete user command into the command object that performs it.
      *
@@ -136,9 +128,9 @@ public class Parser {
                 "The description of a deadline cannot be empty.");
         String by = requireText(content.substring(byIndex + 5),
                 "The deadline time cannot be empty.");
-        LocalDateTime byDateTime = parseDateTime(by,
+        LocalDateTime byDateTime = DateTimeParser.parse(by,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
-        return new AddCommand(new Deadline(description, byDateTime, hasTimeComponent(by)));
+        return new AddCommand(new Deadline(description, byDateTime, DateTimeParser.hasTimeComponent(by)));
     }
 
     /**
@@ -165,12 +157,12 @@ public class Parser {
                 "The event start time cannot be empty.");
         String to = requireText(content.substring(toIndex + 5),
                 "The event end time cannot be empty.");
-        LocalDateTime fromDateTime = parseDateTime(from,
+        LocalDateTime fromDateTime = DateTimeParser.parse(from,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
-        LocalDateTime toDateTime = parseDateTime(to,
+        LocalDateTime toDateTime = DateTimeParser.parse(to,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         return new AddCommand(new Event(description, fromDateTime, toDateTime,
-                hasTimeComponent(from), hasTimeComponent(to)));
+                DateTimeParser.hasTimeComponent(from), DateTimeParser.hasTimeComponent(to)));
     }
 
     /**
@@ -187,29 +179,4 @@ public class Parser {
         return trimmedText;
     }
 
-    /**
-     * Parses a supported date or date-time from user input.
-     */
-    private LocalDateTime parseDateTime(String text, String errorMessage) throws TopazException {
-        try {
-            return LocalDateTime.parse(text, DATE_TIME_INPUT_FORMAT);
-        } catch (DateTimeParseException exception) {
-            try {
-                return LocalDate.parse(text, DateTimeFormatter.ISO_LOCAL_DATE).atStartOfDay();
-            } catch (DateTimeParseException ignoredException) {
-                try {
-                    return LocalDateTime.parse(text, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                } catch (DateTimeParseException ignoredAgainException) {
-                    throw new TopazException(errorMessage);
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns whether a date string includes a time component.
-     */
-    private boolean hasTimeComponent(String text) {
-        return !text.matches("\\d{4}-\\d{2}-\\d{2}");
-    }
 }
