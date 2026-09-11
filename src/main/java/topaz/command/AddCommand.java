@@ -23,11 +23,18 @@ public class AddCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TopazException {
+        // Every AddCommand is constructed from a successfully parsed task.
+        assert task != null : "An add command must contain a task.";
+        int originalSize = tasks.size();
         tasks.add(task);
+        assert tasks.get(tasks.size() - 1) == task
+                : "Adding a task must append the same task to the list.";
         try {
             storage.save(tasks.asList());
         } catch (TopazException exception) {
             tasks.remove(tasks.size() - 1);
+            assert tasks.size() == originalSize
+                    : "A failed save must restore the task list before the addition.";
             throw exception;
         }
         ui.showAddedTask(task, tasks.size());

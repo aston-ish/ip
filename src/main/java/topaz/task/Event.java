@@ -27,6 +27,9 @@ public class Event extends Task {
     public Event(String description, LocalDateTime from, LocalDateTime to,
                  boolean hasFromTime, boolean hasToTime) {
         super(description);
+        // Parsed events always have both endpoints; display and persistence use both values.
+        assert from != null : "An event must have a start date and time.";
+        assert to != null : "An event must have an end date and time.";
         this.from = from;
         this.to = to;
         this.hasFromTime = hasFromTime;

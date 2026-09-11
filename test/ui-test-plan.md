@@ -28,6 +28,12 @@ first failure, showing the actual and expected output.
 Automated UI tests use a temporary save-file path so that they do not overwrite a
 user's `data/Topaz.txt` file.
 
+## Assertion increment
+
+The assertions added in this increment validate internal model and command
+invariants only. They do not change command-line input or output, so the existing
+UI cases remain applicable without revision.
+
 ## Persistence integration check
 
 Aim: Verify that a fresh chatbot process loads saved tasks with their type, completion status, and time fields intact.
