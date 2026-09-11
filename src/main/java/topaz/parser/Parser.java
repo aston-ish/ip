@@ -33,22 +33,29 @@ public class Parser {
             return new ExitCommand();
         } else if (command.equals("list")) {
             return new ListCommand();
-        } else if (command.equals("find") || command.startsWith("find ")) {
+        } else if (isCommandWithArguments(command, "find")) {
             return parseFind(command);
-        } else if (command.equals("mark") || command.startsWith("mark ")) {
+        } else if (isCommandWithArguments(command, "mark")) {
             return parseMarkCommand(command, taskCount);
-        } else if (command.equals("unmark") || command.startsWith("unmark ")) {
+        } else if (isCommandWithArguments(command, "unmark")) {
             return parseUnmarkCommand(command, taskCount);
-        } else if (command.equals("delete") || command.startsWith("delete ")) {
+        } else if (isCommandWithArguments(command, "delete")) {
             return parseDeleteCommand(command, taskCount);
-        } else if (command.equals("todo") || command.startsWith("todo ")) {
+        } else if (isCommandWithArguments(command, "todo")) {
             return parseTodo(command);
-        } else if (command.equals("deadline") || command.startsWith("deadline ")) {
+        } else if (isCommandWithArguments(command, "deadline")) {
             return parseDeadline(command);
-        } else if (command.equals("event") || command.startsWith("event ")) {
+        } else if (isCommandWithArguments(command, "event")) {
             return parseEvent(command);
         }
         throw new TopazException("I'm sorry, but I don't know what that means.");
+    }
+
+    /**
+     * Returns whether the input is a command word, optionally followed by arguments.
+     */
+    private boolean isCommandWithArguments(String input, String commandWord) {
+        return input.equals(commandWord) || input.startsWith(commandWord + " ");
     }
 
     /**
