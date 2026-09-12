@@ -1,5 +1,16 @@
 # UI Test Plan
 
+The tutorial change launches the JavaFX graphical interface by default rather than
+the command-line chatbot. The existing command-line test cases remain applicable
+when `topaz.Topaz` is run directly. This plan cannot automate the current GUI
+iteration; manually verify that submitting text with Enter or Send adds a
+right-aligned user dialog and a left-aligned response dialog. Verify that `todo`,
+`deadline`, `event`, `list`, `find`, `mark`, `unmark`, and `delete` produce the
+same responses and save task changes as their command-line equivalents. Verify
+that a welcome dialog appears on launch, each dialog uses the correct speaker
+avatar, and `bye` disables both the input field and Send button after displaying
+the farewell message.
+
 Record every requested command-line UI test case here before running the test session.
 The expected output must match stdout exactly, including prompts, separators, spaces,
 and line breaks.
@@ -32,6 +43,12 @@ user's `data/Topaz.txt` file.
 
 The code-quality refactorings preserve command-line behavior. The existing UI
 cases remain applicable without revision.
+
+## Assertion increment
+
+The assertions added in this increment validate internal model and command
+invariants only. They do not change command-line input or output, so the existing
+UI cases remain applicable without revision.
 
 ## Persistence integration check
 

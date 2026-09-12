@@ -13,6 +13,11 @@ public abstract class Task {
      * @param description the task description
      */
     public Task(String description) {
+        // Parser and Storage validate descriptions before creating tasks. Keeping this
+        // invariant here prevents invalid tasks from reaching display and save code.
+        assert description != null : "Task descriptions must not be null.";
+        assert !description.isBlank() : "Task descriptions must contain text.";
+        assert !description.contains("|") : "Task descriptions must not contain the save-file delimiter.";
         this.description = description;
         this.isDone = false;
     }
