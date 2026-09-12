@@ -22,6 +22,8 @@ public class Deadline extends Task {
      */
     public Deadline(String description, LocalDateTime by, boolean hasTime) {
         super(description);
+        // Parsed deadlines always have a time value; formatting and persistence rely on it.
+        assert by != null : "A deadline must have a date and time.";
         this.by = by;
         this.hasTime = hasTime;
     }

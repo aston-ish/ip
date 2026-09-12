@@ -23,9 +23,13 @@ public class MarkCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TopazException {
+        // Parser validates taskIndex against the current task list before creating this command.
+        assert taskIndex >= 0 && taskIndex < tasks.size()
+                : "A mark command must refer to an existing task.";
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         tasks.markAsDone(taskIndex);
+        assert task.isDone() : "Marking a task must set its completion status.";
         try {
             storage.save(tasks.asList());
         } catch (TopazException exception) {
@@ -34,6 +38,8 @@ public class MarkCommand extends Command {
             } else {
                 tasks.markAsNotDone(taskIndex);
             }
+            assert task.isDone() == wasDone
+                    : "A failed save must restore the task's original completion status.";
             throw exception;
         }
         ui.showMarkedTask(task);

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +98,17 @@ class TaskListTest {
 
         assertEquals(1, taskList.size());
         assertEquals("original", taskList.get(0).getDescription());
+    }
+
+    @Test
+    void taskConstructors_invalidInternalData_throwsAssertionError() {
+        LocalDateTime dateTime = LocalDateTime.of(2026, 9, 11, 12, 0);
+
+        assertThrows(AssertionError.class, () -> new Todo(null));
+        assertThrows(AssertionError.class, () -> new Todo("   "));
+        assertThrows(AssertionError.class, () -> new Todo("task | details"));
+        assertThrows(AssertionError.class, () -> new Deadline("task", null, false));
+        assertThrows(AssertionError.class, () -> new Event("task", dateTime, null, false, false));
     }
 
     @Test
