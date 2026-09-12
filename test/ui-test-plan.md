@@ -39,6 +39,11 @@ first failure, showing the actual and expected output.
 Automated UI tests use a temporary save-file path so that they do not overwrite a
 user's `data/Topaz.txt` file.
 
+## Code quality increment
+
+The code-quality refactorings preserve command-line behavior. The existing UI
+cases remain applicable without revision.
+
 ## Assertion increment
 
 The assertions added in this increment validate internal model and command

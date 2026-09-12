@@ -69,6 +69,11 @@ class ParserTest {
     }
 
     @Test
+    void parse_commandPrefixWithoutSeparator_throwsException() {
+        assertThrows(TopazException.class, () -> parser.parse("findbook", 0));
+    }
+
+    @Test
     void parse_deadlineWithInvalidDate_throwsException() {
         assertThrows(TopazException.class,
                 () -> parser.parse("deadline submit report /by 31/2/2019 1800", 0));
