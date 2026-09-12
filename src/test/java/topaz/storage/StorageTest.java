@@ -17,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 import topaz.TopazException;
 import topaz.task.Deadline;
 import topaz.task.Event;
+import topaz.task.FixedDurationTask;
 import topaz.task.Task;
 import topaz.task.Todo;
 
@@ -39,18 +40,20 @@ class StorageTest {
         Task deadline = new Deadline("return book", LocalDateTime.of(2019, 12, 2, 18, 0), true);
         Task event = new Event("project meeting", LocalDateTime.of(2019, 10, 15, 0, 0),
                 LocalDateTime.of(2019, 10, 16, 0, 0), false, false);
+        Task fixedDurationTask = new FixedDurationTask("read report", 120);
         deadline.markAsDone();
 
-        storage.save(List.of(todo, deadline, event));
+        storage.save(List.of(todo, deadline, event, fixedDurationTask));
         List<Task> loaded = storage.load();
 
-        assertEquals(3, loaded.size());
+        assertEquals(4, loaded.size());
         assertEquals("read book", loaded.get(0).getDescription());
         assertFalse(loaded.get(0).isDone());
         assertEquals("return book (by: Dec 02 2019 1800)", loaded.get(1).getDescription());
         assertTrue(loaded.get(1).isDone());
         assertEquals("project meeting (from: Oct 15 2019 to: Oct 16 2019)",
                 loaded.get(2).getDescription());
+        assertEquals("read report (for: 2 hours)", loaded.get(3).getDescription());
     }
 
     @Test
@@ -67,5 +70,16 @@ class StorageTest {
         Files.writeString(file, "T | 2 | read book\n");
 
         assertThrows(TopazException.class, () -> new Storage(file).load());
+    }
+
+    @Test
+    void load_invalidFixedDuration_throwsException() throws IOException {
+        Path signedDurationFile = temporaryDirectory.resolve("signed-fixed-duration.txt");
+        Path zeroDurationFile = temporaryDirectory.resolve("zero-fixed-duration.txt");
+        Files.writeString(signedDurationFile, "F | 0 | read report | +120\n");
+        Files.writeString(zeroDurationFile, "F | 0 | read report | 0\n");
+
+        assertThrows(TopazException.class, () -> new Storage(signedDurationFile).load());
+        assertThrows(TopazException.class, () -> new Storage(zeroDurationFile).load());
     }
 }

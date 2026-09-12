@@ -6,7 +6,8 @@ package topaz.task;
 public enum TaskType {
     TODO("T"),
     DEADLINE("D"),
-    EVENT("E");
+    EVENT("E"),
+    FIXED_DURATION("F");
 
     private final String icon;
 

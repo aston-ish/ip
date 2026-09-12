@@ -9,10 +9,12 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import topaz.TopazException;
 import topaz.task.Deadline;
 import topaz.task.Event;
+import topaz.task.FixedDurationTask;
 import topaz.task.Task;
 import topaz.task.Todo;
 import topaz.util.DateTimeParser;
@@ -21,6 +23,7 @@ import topaz.util.DateTimeParser;
  * Loads tasks from and saves tasks to the configured data file.
  */
 public class Storage {
+    private static final Pattern POSITIVE_DURATION_PATTERN = Pattern.compile("[1-9]\\d*");
     private final Path saveFile;
 
     /**
@@ -122,6 +125,8 @@ public class Storage {
             task = new Event(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
                     DateTimeParser.parse(values[4], "Unable to load a saved task."),
                     DateTimeParser.hasTimeComponent(values[3]), DateTimeParser.hasTimeComponent(values[4]));
+        } else if (values.length == 4 && values[0].equals("F")) {
+            task = new FixedDurationTask(values[2], parseDurationMinutes(values[3]));
         } else {
             throw new TopazException("Unable to load a saved task.");
         }
@@ -130,6 +135,21 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Parses a positive whole-minute duration stored in a fixed-duration task.
+     */
+    private long parseDurationMinutes(String durationText) throws TopazException {
+        if (!POSITIVE_DURATION_PATTERN.matcher(durationText).matches()) {
+            throw new TopazException("Unable to load a saved task.");
+        }
+        try {
+            long durationMinutes = Long.parseLong(durationText);
+            return durationMinutes;
+        } catch (NumberFormatException exception) {
+            throw new TopazException("Unable to load a saved task.");
+        }
     }
 
 }

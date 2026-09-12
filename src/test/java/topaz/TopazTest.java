@@ -27,6 +27,21 @@ class TopazTest {
     }
 
     @Test
+    void getResponse_durationTask_supportsExistingTaskCommands() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+
+        String addResponse = topaz.getResponse("duration read report /for 2h");
+        String markResponse = topaz.getResponse("mark 1");
+        String findResponse = topaz.getResponse("find hours");
+        String deleteResponse = topaz.getResponse("delete 1");
+
+        assertTrue(addResponse.contains("[F][ ] read report (for: 2 hours)"));
+        assertTrue(markResponse.contains("[F][X] read report (for: 2 hours)"));
+        assertTrue(findResponse.contains("[F][X] read report (for: 2 hours)"));
+        assertTrue(deleteResponse.contains("[F][X] read report (for: 2 hours)"));
+    }
+
+    @Test
     void getResponse_invalidCommand_returnsErrorMessage() {
         Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
 
