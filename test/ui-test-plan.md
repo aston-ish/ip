@@ -715,3 +715,105 @@ ____________________________________________________________
  Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+### Test case: Fixed-duration task management and validation
+
+Aim: Verify that duration tasks display their fixed duration and work with existing task commands, while invalid duration inputs do not change the list.
+
+Input:
+```text
+duration read the sales report /for 2h
+duration take a break /for 90m
+list
+mark 1
+find hours
+duration invalid duration /for 0h
+duration missing duration /for
+duration /for 2h
+duration duplicate duration /for 1h /for 2h
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [F][ ] read the sales report (for: 2 hours)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Got it. I've added this task:
+   [F][ ] take a break (for: 90 minutes)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+ Here are the tasks in your list:
+ 1.[F][ ] read the sales report (for: 2 hours)
+ 2.[F][ ] take a break (for: 90 minutes)
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [F][X] read the sales report (for: 2 hours)
+____________________________________________________________
+ Here are the matching tasks in your list:
+ 1.[F][X] read the sales report (for: 2 hours)
+____________________________________________________________
+ Use a duration as a positive whole number followed by h or m.
+____________________________________________________________
+ The duration cannot be empty.
+____________________________________________________________
+ The description of a duration task cannot be empty.
+____________________________________________________________
+ Use: duration <description> /for <duration>.
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### Test case: Fixed-duration task persistence
+
+Aim: Verify that a marked duration task is saved using the fixed-duration record format.
+
+Input:
+```text
+duration read the sales report /for 2h
+mark 1
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+ _____                 _          
+|_   _|__  _ __   __ _| |__       
+  | |/ _ \| '_ \ / _` | '_ \      
+  | | (_) | |_) | (_| | | | |     
+  |_|\___/| .__/ \__,_|_| |_|     
+           |_|                      
+
+Hello! I'm Topaz.
+What can I do for you?
+____________________________________________________________
+ Got it. I've added this task:
+   [F][ ] read the sales report (for: 2 hours)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+ Nice! I've marked this task as done:
+   [F][X] read the sales report (for: 2 hours)
+____________________________________________________________
+ Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+Expected `data/ui-test.txt` after this case:
+
+```text
+F | 1 | read the sales report | 120
+```

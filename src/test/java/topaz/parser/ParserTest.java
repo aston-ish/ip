@@ -1,5 +1,6 @@
 package topaz.parser;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -39,6 +40,44 @@ class ParserTest {
     @Test
     void parse_todo_returnsAddCommand() throws TopazException {
         assertInstanceOf(AddCommand.class, parser.parse("todo read book", 0));
+    }
+
+    @Test
+    void parse_durationWithHours_returnsAddCommand() throws TopazException {
+        assertInstanceOf(AddCommand.class, parser.parse("duration read report /for 2h", 0));
+    }
+
+    @Test
+    void parse_durationWithMinutes_returnsAddCommand() throws TopazException {
+        assertInstanceOf(AddCommand.class, parser.parse("duration take a break /for 15m", 0));
+    }
+
+    @Test
+    void parse_durationWithInvalidValues_throwsException() {
+        assertDurationError("duration task /for 0h",
+                "Use a duration as a positive whole number followed by h or m.");
+        assertDurationError("duration task /for -2h",
+                "Use a duration as a positive whole number followed by h or m.");
+        assertDurationError("duration task /for 1.5h",
+                "Use a duration as a positive whole number followed by h or m.");
+        assertDurationError("duration task /for 2d",
+                "Use a duration as a positive whole number followed by h or m.");
+        assertDurationError("duration task /for 1h /for 2h",
+                "Use: duration <description> /for <duration>.");
+        assertDurationError("duration task /for 1h /for",
+                "Use: duration <description> /for <duration>.");
+    }
+
+    @Test
+    void parse_durationWithoutDescription_throwsException() {
+        assertDurationError("duration /for 2h", "The description of a duration task cannot be empty.");
+    }
+
+    @Test
+    void parse_durationWithoutMarkerOrValue_throwsException() {
+        assertDurationError("duration", "Use: duration <description> /for <duration>.");
+        assertDurationError("duration read report", "Use: duration <description> /for <duration>.");
+        assertDurationError("duration read report /for", "The duration cannot be empty.");
     }
 
     @Test
@@ -83,5 +122,11 @@ class ParserTest {
     void parse_eventMissingTime_throwsException() {
         assertThrows(TopazException.class,
                 () -> parser.parse("event meeting /from 2019-10-15 /to", 0));
+    }
+
+    private void assertDurationError(String command, String expectedMessage) {
+        TopazException exception = assertThrows(TopazException.class, () -> parser.parse(command, 0));
+
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }

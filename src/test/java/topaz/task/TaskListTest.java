@@ -109,6 +109,16 @@ class TaskListTest {
         assertThrows(AssertionError.class, () -> new Todo("task | details"));
         assertThrows(AssertionError.class, () -> new Deadline("task", null, false));
         assertThrows(AssertionError.class, () -> new Event("task", dateTime, null, false, false));
+        assertThrows(AssertionError.class, () -> new FixedDurationTask("task", 0));
+    }
+
+    @Test
+    void fixedDurationTask_displaysAndSerializesDuration() {
+        FixedDurationTask task = new FixedDurationTask("read report", 120);
+
+        assertEquals(TaskType.FIXED_DURATION, task.getTaskType());
+        assertEquals("read report (for: 2 hours)", task.getDescription());
+        assertEquals("F | 0 | read report | 120", task.toFileString());
     }
 
     @Test

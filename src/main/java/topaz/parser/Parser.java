@@ -1,6 +1,8 @@
 package topaz.parser;
 
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import topaz.TopazException;
 import topaz.command.AddCommand;
@@ -13,6 +15,7 @@ import topaz.command.MarkCommand;
 import topaz.command.UnmarkCommand;
 import topaz.task.Deadline;
 import topaz.task.Event;
+import topaz.task.FixedDurationTask;
 import topaz.task.Todo;
 import topaz.util.DateTimeParser;
 
@@ -20,6 +23,13 @@ import topaz.util.DateTimeParser;
  * Parses user commands and creates tasks from valid command arguments.
  */
 public class Parser {
+    private static final String DURATION_COMMAND = "duration";
+    private static final String DURATION_MARKER = " /for ";
+    private static final String EMPTY_DURATION_MARKER = " /for";
+    private static final String LEADING_DURATION_MARKER = "/for ";
+    private static final Pattern DURATION_PATTERN = Pattern.compile("([1-9]\\d*)([hm])");
+    private static final long MINUTES_PER_HOUR = 60;
+
     /**
      * Parses one complete user command into the command object that performs it.
      *
@@ -47,6 +57,8 @@ public class Parser {
             return parseDeadline(command);
         } else if (isCommandWithArguments(command, "event")) {
             return parseEvent(command);
+        } else if (isCommandWithArguments(command, DURATION_COMMAND)) {
+            return parseDuration(command);
         }
         throw new TopazException("I'm sorry, but I don't know what that means.");
     }
@@ -170,6 +182,59 @@ public class Parser {
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         return new AddCommand(new Event(description, fromDateTime, toDateTime,
                 DateTimeParser.hasTimeComponent(from), DateTimeParser.hasTimeComponent(to)));
+    }
+
+    /**
+     * Parses a fixed-duration task command into an add command.
+     */
+    private Command parseDuration(String command) throws TopazException {
+        String content = command.substring(DURATION_COMMAND.length()).trim();
+        int durationMarkerIndex = content.indexOf(DURATION_MARKER);
+        int durationStartIndex = durationMarkerIndex + DURATION_MARKER.length();
+        if (content.startsWith(LEADING_DURATION_MARKER)) {
+            durationMarkerIndex = 0;
+            durationStartIndex = LEADING_DURATION_MARKER.length();
+        }
+        if (durationMarkerIndex < 0) {
+            if (content.endsWith(EMPTY_DURATION_MARKER)) {
+                throw new TopazException("The duration cannot be empty.");
+            }
+            throw new TopazException("Use: duration <description> /for <duration>.");
+        }
+        if (content.indexOf(DURATION_MARKER, durationMarkerIndex + 1) >= 0
+                || content.endsWith(EMPTY_DURATION_MARKER)) {
+            throw new TopazException("Use: duration <description> /for <duration>.");
+        }
+
+        String description = requireText(content.substring(0, durationMarkerIndex),
+                "The description of a duration task cannot be empty.");
+        String durationText = requireText(content.substring(durationStartIndex),
+                "The duration cannot be empty.");
+        return new AddCommand(new FixedDurationTask(description, parseDurationMinutes(durationText)));
+    }
+
+    /**
+     * Parses a positive whole-minute or whole-hour duration into minutes.
+     */
+    private long parseDurationMinutes(String durationText) throws TopazException {
+        Matcher matcher = DURATION_PATTERN.matcher(durationText);
+        if (!matcher.matches()) {
+            throw invalidDurationException();
+        }
+
+        try {
+            long amount = Long.parseLong(matcher.group(1));
+            return matcher.group(2).equals("h") ? Math.multiplyExact(amount, MINUTES_PER_HOUR) : amount;
+        } catch (NumberFormatException | ArithmeticException exception) {
+            throw invalidDurationException();
+        }
+    }
+
+    /**
+     * Returns the error used when a duration does not use a supported format.
+     */
+    private TopazException invalidDurationException() {
+        return new TopazException("Use a duration as a positive whole number followed by h or m.");
     }
 
     /**
