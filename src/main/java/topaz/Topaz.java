@@ -19,6 +19,7 @@ public class Topaz {
     private final Parser parser;
     private TaskList tasks;
     private boolean exitRequested;
+    private boolean responseError;
 
     /**
      * Creates Topaz with a console user interface.
@@ -75,6 +76,7 @@ public class Topaz {
      * @return the response generated for the command
      */
     public String getResponse(String input) {
+        responseError = false;
         StringBuilder response = new StringBuilder();
         Ui responseUi = new Ui(response);
         try {
@@ -83,9 +85,19 @@ public class Topaz {
             command.execute(tasks, responseUi, storage);
             exitRequested = command.isExit();
         } catch (TopazException exception) {
+            responseError = true;
             responseUi.showError(exception);
         }
         return response.toString().stripTrailing();
+    }
+
+    /**
+     * Returns whether the most recent graphical response reports a failure.
+     *
+     * @return true when loading, parsing, or executing the last command failed
+     */
+    public boolean isResponseError() {
+        return responseError;
     }
 
     /**

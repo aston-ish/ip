@@ -50,9 +50,11 @@ public class MainWindow {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = topaz.getResponse(input);
+        DialogBox responseDialog = topaz.isResponseError()
+                ? DialogBox.getErrorDialog(response) : DialogBox.getTopazDialog(response);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input),
-                DialogBox.getTopazDialog(response));
+                responseDialog);
         userInput.clear();
         if (topaz.isExitRequested()) {
             userInput.setDisable(true);

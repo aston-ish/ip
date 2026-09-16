@@ -57,4 +57,28 @@ class DialogBoxTest {
         Platform.runLater(check);
         check.get(10, TimeUnit.SECONDS);
     }
+    @Test
+    void errorDialog_failureThenNormalResponse_hasDistinctAppearance() throws Exception {
+        FutureTask<Void> check = new FutureTask<>(() -> {
+            DialogBox error = DialogBox.getErrorDialog("Unknown command. Try list.");
+            DialogBox normal = DialogBox.getTopazDialog("Here are your tasks.");
+            VBox conversation = new VBox(error, normal);
+            new Scene(conversation, 400, 600);
+            conversation.applyCss();
+            conversation.layout();
+
+            Label heading = (Label) error.lookup(".message-heading");
+            Label message = (Label) error.lookup(".message-text");
+            assertEquals("TOPAZ / ERROR", heading.getText());
+            assertEquals("Unknown command. Try list.", message.getText());
+            assertEquals(javafx.scene.paint.Color.web("#7a271a"), message.getTextFill());
+            assertTrue(error.lookup(".error-dialog") != null);
+            assertTrue(normal.lookup(".error-dialog") == null);
+            assertEquals("TOPAZ", ((Label) normal.lookup(".message-heading")).getText());
+            return null;
+        });
+        Platform.runLater(check);
+        check.get(10, TimeUnit.SECONDS);
+    }
+
 }

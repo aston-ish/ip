@@ -825,3 +825,13 @@ cannot verify JavaFX styling. Manually check the welcome card, Enter and Send,
 a long command, a multi-line list, and window resizing: commands must wrap in
 right-aligned blue bubbles, while responses fill the width with a TOPAZ heading
 and left accent. No avatars or clipped text should appear.
+
+## Error highlighting
+
+CLI messages are unchanged; run the existing invalid-command cases. JavaFX
+JUnit tests check the error heading, text color, and isolation from normal
+cards. Manually submit `unknown`, `todo`, `mark 99`, and an invalid deadline:
+each response should have a TOPAZ / ERROR heading, pale red background, dark
+red text, and red left border. Then submit `list`: the new card should use
+normal styling while previous error cards remain highlighted. Verify long
+errors wrap and Enter and Send both retain focus/scroll behavior.

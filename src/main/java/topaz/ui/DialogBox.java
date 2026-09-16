@@ -76,4 +76,17 @@ public class DialogBox extends HBox {
         dialogBox.flip();
         return dialogBox;
     }
+
+    /**
+     * Creates an error card with both a text heading and a distinct color.
+     *
+     * @param text the error explanation
+     * @return the created error card
+     */
+    public static DialogBox getErrorDialog(String text) {
+        DialogBox dialogBox = getTopazDialog(text);
+        dialogBox.heading.setText("TOPAZ / ERROR");
+        dialogBox.message.getStyleClass().add("error-dialog");
+        return dialogBox;
+    }
 }

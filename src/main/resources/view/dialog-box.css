@@ -26,3 +26,16 @@
     -fx-border-width: 0 0 0 3;
     -fx-padding: 12 14;
 }
+
+.error-dialog {
+    -fx-background-color: #fff1f0;
+    -fx-border-color: #b42318;
+}
+
+.error-dialog .message-heading {
+    -fx-text-fill: #b42318;
+}
+
+.error-dialog .message-text {
+    -fx-text-fill: #7a271a;
+}
