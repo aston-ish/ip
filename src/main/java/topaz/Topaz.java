@@ -1,5 +1,6 @@
 package topaz;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -15,7 +16,8 @@ import topaz.ui.Ui;
 public class Topaz {
     private static final Path DEFAULT_SAVE_FILE = Paths.get("data", "Topaz.txt");
     private final Ui ui;
-    private final Storage storage;
+    private final String saveFileName;
+    private Storage storage;
     private final Parser parser;
     private TaskList tasks;
     private boolean exitRequested;
@@ -25,7 +27,7 @@ public class Topaz {
      * Creates Topaz with a console user interface.
      */
     public Topaz() {
-        this(Paths.get(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString())));
+        this(System.getProperty("topaz.dataFile", DEFAULT_SAVE_FILE.toString()));
     }
 
     /**
@@ -34,8 +36,15 @@ public class Topaz {
      * @param saveFile the file used to store tasks
      */
     Topaz(Path saveFile) {
+        this(saveFile.toString());
+    }
+
+    /**
+     * Defers path validation so configuration errors can be shown in either interface.
+     */
+    Topaz(String saveFileName) {
         ui = new Ui();
-        storage = new Storage(saveFile);
+        this.saveFileName = saveFileName;
         parser = new Parser();
     }
 
@@ -115,6 +124,16 @@ public class Topaz {
      * @throws TopazException if the saved task list cannot be loaded
      */
     private void loadTasks() throws TopazException {
+        if (storage == null) {
+            try {
+                if (saveFileName.isBlank()) {
+                    throw new InvalidPathException(saveFileName, "The path is empty.");
+                }
+                storage = new Storage(Paths.get(saveFileName));
+            } catch (InvalidPathException | SecurityException exception) {
+                throw new TopazException("The save-file path is invalid or inaccessible. Check topaz.dataFile.");
+            }
+        }
         if (tasks == null) {
             tasks = new TaskList(storage.load());
         }

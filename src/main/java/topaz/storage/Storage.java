@@ -1,14 +1,20 @@
 package topaz.storage;
 
-import java.io.FileWriter;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import topaz.TopazException;
@@ -42,63 +48,143 @@ public class Storage {
      * @throws TopazException if the data file cannot be written
      */
     public void save(List<Task> tasks) throws TopazException {
+        Path temporaryFile = null;
         try {
-            Path parentDirectory = saveFile.getParent();
-            if (parentDirectory != null && Files.exists(parentDirectory)
-                    && !Files.isDirectory(parentDirectory)) {
-                throw new TopazException("The data directory path is not a directory.");
+            Path target = saveFile.toAbsolutePath();
+            Path parent = target.getParent();
+            if (parent == null) {
+                throw new TopazException("Unable to save your tasks: the save path must be a regular file.");
             }
-            if (parentDirectory != null && !Files.exists(parentDirectory)) {
-                Files.createDirectories(parentDirectory);
-            }
-
-            try (PrintWriter writer = new PrintWriter(
-                    new FileWriter(saveFile.toFile(), StandardCharsets.UTF_8))) {
+            Files.createDirectories(parent);
+            validateSaveTarget(target);
+            temporaryFile = Files.createTempFile(parent, "gronk-", ".tmp");
+            try (BufferedWriter writer = Files.newBufferedWriter(temporaryFile, StandardCharsets.UTF_8)) {
                 for (Task task : tasks) {
-                    writer.println(task.toFileString());
-                }
-                if (writer.checkError()) {
-                    throw new IOException("Unable to write the save file.");
+                    writer.write(task.toFileString());
+                    writer.newLine();
                 }
             }
+            // Only replace the old file after every record has been written and closed.
+            Files.move(temporaryFile, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException exception) {
+            throw new TopazException("Unable to save your tasks: this location does not support safe atomic saves."
+                    + " Choose a local data folder.");
+        } catch (AccessDeniedException | SecurityException exception) {
+            throw new TopazException("Unable to save your tasks: access denied. Check file and folder permissions.");
         } catch (IOException exception) {
-            throw new TopazException("Unable to save your tasks.");
-        } catch (SecurityException exception) {
-            throw new TopazException("Unable to access the save file.");
+            throw new TopazException("Unable to save your tasks. Check the data folder, disk space, and file locks.");
+        } finally {
+            deleteTemporaryFile(temporaryFile);
         }
     }
 
     /**
-     * Loads saved tasks, returning an empty list when the data file does not exist.
+     * Rejects directories, links, and read-only files before replacing the save target.
+     */
+    private void validateSaveTarget(Path target) throws IOException, TopazException {
+        try {
+            BasicFileAttributes attributes = Files.readAttributes(target, BasicFileAttributes.class,
+                    LinkOption.NOFOLLOW_LINKS);
+            if (!attributes.isRegularFile()) {
+                throw new TopazException("Unable to save your tasks: the save path must be a regular file.");
+            }
+            if (!Files.isWritable(target)) {
+                throw new AccessDeniedException(target.toString());
+            }
+        } catch (NoSuchFileException exception) {
+            // A new save file is expected on the first successful task change.
+        }
+    }
+
+    /**
+     * Removes an unused staging file without hiding the original save failure.
+     */
+    private void deleteTemporaryFile(Path temporaryFile) {
+        if (temporaryFile == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(temporaryFile);
+        } catch (IOException | SecurityException exception) {
+            // An inaccessible orphan is harmless; never delete the real save file to recover.
+        }
+    }
+
+    /**
+     * Loads saved tasks, returning an empty list only when the file is confirmed missing.
      *
      * @return the tasks loaded from the data file
-     * @throws TopazException if the data file cannot be read or contains invalid data
+     * @throws TopazException if the saved task list cannot be safely read
      */
     public List<Task> load() throws TopazException {
         List<Task> tasks = new ArrayList<>();
         try {
-            if (!Files.exists(saveFile)) {
+            BasicFileAttributes attributes;
+            try {
+                attributes = Files.readAttributes(saveFile, BasicFileAttributes.class);
+            } catch (NoSuchFileException exception) {
+                validateMissingFileParent();
                 return tasks;
             }
-            if (!Files.isRegularFile(saveFile)) {
-                throw new TopazException("The save file path is not a file.");
+            if (!attributes.isRegularFile()) {
+                throw new TopazException("The save file path is not a file. Check topaz.dataFile.");
             }
-
-            try (Scanner fileScanner = new Scanner(saveFile, StandardCharsets.UTF_8)) {
-                while (fileScanner.hasNextLine()) {
-                    String line = fileScanner.nextLine();
+            try (BufferedReader reader = Files.newBufferedReader(saveFile, StandardCharsets.UTF_8)) {
+                String line;
+                int lineNumber = 0;
+                while ((line = reader.readLine()) != null) {
+                    lineNumber++;
+                    if (lineNumber == 1 && line.startsWith("\uFEFF")) {
+                        line = line.substring(1);
+                    }
                     if (!line.isBlank()) {
-                        tasks.add(createTask(line));
+                        addSavedTask(tasks, line, lineNumber);
                     }
                 }
-                if (fileScanner.ioException() != null) {
-                    throw new TopazException("Unable to load your saved tasks.");
-                }
             }
-        } catch (IOException | SecurityException exception) {
-            throw new TopazException("Unable to load your saved tasks.");
+        } catch (AccessDeniedException | SecurityException exception) {
+            throw new TopazException("Unable to load your saved tasks: access denied. Check file permissions.");
+        } catch (IOException exception) {
+            throw new TopazException("Unable to load your saved tasks. Check that the file is readable UTF-8 text.");
         }
         return tasks;
+    }
+
+    /**
+     * Distinguishes a missing data folder from a non-directory ancestor on Windows.
+     */
+    private void validateMissingFileParent() throws IOException, TopazException {
+        Path parent = saveFile.toAbsolutePath().getParent();
+        while (parent != null) {
+            try {
+                if (!Files.readAttributes(parent, BasicFileAttributes.class).isDirectory()) {
+                    throw new TopazException("The data directory path is not a directory. Check topaz.dataFile.");
+                }
+                return;
+            } catch (NoSuchFileException exception) {
+                parent = parent.getParent();
+            }
+        }
+    }
+
+    /**
+     * Validates a record and identifies its line when the file needs repair.
+     */
+    private void addSavedTask(List<Task> tasks, String line, int lineNumber) throws TopazException {
+        try {
+            if (line.codePoints().anyMatch(character -> (Character.isISOControl(character) && character != '\t')
+                    || character == '\u2028' || character == '\u2029')) {
+                throw new TopazException("Task details contain control characters.");
+            }
+            Task task = createTask(line);
+            if (tasks.stream().anyMatch(existing -> existing.hasSameDetails(task))) {
+                throw new TopazException("The save file contains a duplicate task.");
+            }
+            tasks.add(task);
+        } catch (TopazException exception) {
+            throw new TopazException("Invalid save data at line " + lineNumber + ": " + exception.getMessage()
+                    + " Repair this line or restore a backup; the file has not been changed.");
+        }
     }
 
     /**
@@ -122,8 +208,10 @@ public class Storage {
             task = new Deadline(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
                     DateTimeParser.hasTimeComponent(values[3]));
         } else if (values.length == 5 && values[0].equals("E")) {
-            task = new Event(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
-                    DateTimeParser.parse(values[4], "Unable to load a saved task."),
+            LocalDateTime from = DateTimeParser.parse(values[3], "Unable to load a saved task.");
+            LocalDateTime to = DateTimeParser.parse(values[4], "Unable to load a saved task.");
+            DateTimeParser.validateEventPeriod(from, to);
+            task = new Event(values[2], from, to,
                     DateTimeParser.hasTimeComponent(values[3]), DateTimeParser.hasTimeComponent(values[4]));
         } else if (values.length == 4 && values[0].equals("F")) {
             task = new FixedDurationTask(values[2], parseDurationMinutes(values[3]));

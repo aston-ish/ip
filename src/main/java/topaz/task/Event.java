@@ -60,6 +60,11 @@ public class Event extends Task {
         return super.getDescription() + " (from: " + formattedFrom + " to: " + formattedTo + ")";
     }
 
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        return from.equals(((Event) other).from) && to.equals(((Event) other).to);
+    }
+
     /**
      * Serializes this event for storage.
      *

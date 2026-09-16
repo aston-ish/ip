@@ -49,6 +49,19 @@ public final class DateTimeParser {
     }
 
     /**
+     * Rejects events with an end at or before their start.
+     *
+     * @param from the parsed event start
+     * @param to the parsed event end
+     * @throws TopazException if the event has zero or negative duration
+     */
+    public static void validateEventPeriod(LocalDateTime from, LocalDateTime to) throws TopazException {
+        if (!to.isAfter(from)) {
+            throw new TopazException("The event end must be after its start.");
+        }
+    }
+
+    /**
      * Returns whether the supplied date text includes a time component.
      *
      * @param text the date text to inspect

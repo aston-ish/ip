@@ -27,3 +27,36 @@ The existing `data/Topaz.txt` save file and `topaz.dataFile` option are retained
 so existing tasks continue to load.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Command validation
+
+Leading and trailing spaces, repeated spaces, and tabs are accepted. Commands
+must occupy one line; control characters and the save-file delimiter `|` are
+not allowed in task details. `list` and `bye` take no arguments. Task numbers
+use decimal digits and must refer to a task in the current list.
+
+For `deadline`, `event`, and `duration`, slash-prefixed words are reserved for
+parameters. Supply `/by`, `/from` then `/to`, or `/for` exactly once, with a
+value and a task description. Dates use `yyyy-MM-dd`, `d/M/yyyy HHmm`, or an
+ISO local date-time such as `2026-12-07T14:00`.
+
+Events must end strictly after they start; date-only endpoints mean midnight.
+Impossible dates and times are rejected. Duplicate tasks are rejected when
+type, description, and dates or duration match. Description comparison ignores
+case and repeated spaces, and completion status does not make a task unique.
+Different dates, durations, or task types remain valid separate tasks.
+
+## Storage errors and recovery
+
+A missing save file starts an empty list. Other read failures leave the file
+untouched: check the reported line for malformed or duplicate tasks, restore a
+backup if needed, and retry the command in the GUI (or restart the CLI).
+Save files must be UTF-8; a leading UTF-8 byte-order mark is accepted.
+
+Changes are written to a temporary file in the same directory and atomically
+replace the original only after writing finishes. A failed save rolls back
+the command in memory. Check permissions, free disk space, file locks, and
+`topaz.dataFile` if an error appears. Save targets must be regular files;
+read-only files and symbolic-link targets are not replaced. If the file system
+cannot provide atomic replacement, use a local data folder. An interrupted
+save can leave a harmless `gronk-*.tmp` file beside the original.

@@ -25,6 +25,9 @@ public class AddCommand extends Command {
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TopazException {
         // Every AddCommand is constructed from a successfully parsed task.
         assert task != null : "An add command must contain a task.";
+        if (tasks.containsDuplicate(task)) {
+            throw new TopazException("That task already exists. Use list to find it.");
+        }
         int originalSize = tasks.size();
         tasks.add(task);
         assert tasks.get(tasks.size() - 1) == task

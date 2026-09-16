@@ -864,3 +864,146 @@ green GRONK! heading, and user text has no added heading. Errors retain their
 red card and separate ERROR label while GRONK! stays green. Resize the window
 and submit with Enter and Send; the cry should appear once per response.
 The data file and command syntax remain compatible with existing tasks.
+
+### Test case: Whitespace and ambiguous commands
+
+Aim: Accept harmless spacing and reject empty or ambiguous commands without changing tasks or exiting.
+
+The input block intentionally contains trailing spaces and a whitespace-only line.
+
+Input:
+```text
+  todo   read book  
+list extra
+bye extra
+deadline /by 2026-12-07
+deadline return /by 2026-12-07 /by 2026-12-08
+event meet /from 2026-12-07 /to 2026-12-08 /to
+mark +1
+   
+ list 
+ bye 
+```
+
+Expected output:
+```text
+____________________________________________________________
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: list (without extra arguments).
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: bye (without extra arguments).
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The description of a deadline cannot be empty.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: deadline <description> /by <time>.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: event <description> /from <time> /to <time>.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The task number must be an integer.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Please enter a command, such as list or todo <description>.
+____________________________________________________________
+GRONK!
+ Gronk guards your task pile:
+ 1.[T][ ] read book
+____________________________________________________________
+GRONK!
+ Gronk rests now. Come back strong!
+____________________________________________________________
+```
+
+### Test case: Reject invalid dates and duplicate tasks
+
+Aim: Reject zero-length/reversed events, impossible dates, and duplicates while preserving valid tasks.
+
+Input:
+```text
+todo read book
+mark 1
+todo READ BOOK
+event meeting /from 2026-12-07 /to 2026-12-07
+event meeting /from 2026-12-08 /to 2026-12-07
+deadline impossible /by 2026-02-30
+duration stretch /for 1h
+duration STRETCH /for 60m
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Task crushed! Gronk marks it done:
+   [T][X] read book
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. That task already exists. Use list to find it.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The event end must be after its start.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The event end must be after its start.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [F][ ] stretch (for: 1 hour)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. That task already exists. Use list to find it.
+____________________________________________________________
+GRONK!
+ Gronk guards your task pile:
+ 1.[T][X] read book
+ 2.[F][ ] stretch (for: 1 hour)
+____________________________________________________________
+GRONK!
+ Gronk rests now. Come back strong!
+____________________________________________________________
+```
+
+## Storage environment increment
+
+Normal command output remains unchanged; rerun all CLI sessions. JUnit covers
+missing files, blocked parent paths, directory targets, read-only save files,
+invalid configured paths, malformed UTF-8, a byte-order mark, corrupt line
+numbers, save replacement, encoding failure during a write, recovery after repair, and mutation rollback.
+The read-only test skips only if the host account overrides file permissions.
+Disk-full and abrupt-power-loss scenarios are not simulated by this CLI runner.
+
+For a GUI check, use a disposable `topaz.dataFile` containing an invalid record,
+submit `list`, and verify a red error card reports the bad line. Repair that
+file and submit `list` again; it should recover without loading partial data.
+Do not run this check against the user's real saved tasks.
+
+The separate `test/storage-ui-test-plan.md` checks startup output for corrupt
+saved data using its own disposable fixture.

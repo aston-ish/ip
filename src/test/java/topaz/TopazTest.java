@@ -1,5 +1,6 @@
 package topaz;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -105,6 +106,57 @@ class TopazTest {
         for (String command : commands) {
             assertTrue(topaz.getResponse(command).startsWith("GRONK!" + System.lineSeparator()));
         }
+    }
+
+    @Test
+    void getResponse_duplicateTask_keepsSavedTaskAndCompletion() throws Exception {
+        Path saveFile = temporaryDirectory.resolve("Topaz.txt");
+        Topaz topaz = new Topaz(saveFile);
+        topaz.getResponse("todo Read Book");
+        topaz.getResponse("mark 1");
+        String saved = Files.readString(saveFile);
+
+        assertTrue(topaz.getResponse("todo  read   book").contains("already exists"));
+        assertTrue(topaz.isResponseError());
+        assertEquals(saved, Files.readString(saveFile));
+        assertTrue(topaz.getResponse("list").contains("1.[T][X] Read Book"));
+        assertFalse(topaz.isResponseError());
+    }
+
+    @Test
+    void getResponse_invalidEventPeriod_doesNotAddTask() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+        for (String end : new String[] {"2026-12-06", "2026-12-07"}) {
+            assertTrue(topaz.getResponse("event meeting /from 2026-12-07 /to " + end)
+                    .contains("end must be after"));
+            assertTrue(topaz.isResponseError());
+        }
+        assertFalse(topaz.getResponse("list").contains("[E]"));
+    }
+
+    @Test
+    void getResponse_invalidConfiguredPath_returnsErrorInsteadOfCrashing() {
+        for (String path : new String[] {"bad\u0000path", "   "}) {
+            Topaz topaz = new Topaz(path);
+            assertTrue(topaz.getResponse("list").contains("Check topaz.dataFile"));
+            assertTrue(topaz.isResponseError());
+        }
+    }
+
+    @Test
+    void getResponse_corruptFileThenRepair_recoversWithoutPartialLoad() throws Exception {
+        Path file = temporaryDirectory.resolve("repair.txt");
+        String invalid = "T | 0 | first\nX | 0 | broken\n";
+        Files.writeString(file, invalid);
+        Topaz topaz = new Topaz(file);
+        assertTrue(topaz.getResponse("todo should not be added").contains("line 2"));
+        assertTrue(topaz.isResponseError());
+        assertEquals(invalid, Files.readString(file));
+        Files.writeString(file, "T | 0 | repaired\n");
+        String response = topaz.getResponse("list");
+        assertFalse(topaz.isResponseError());
+        assertTrue(response.contains("1.[T][ ] repaired"));
+        assertFalse(response.contains("first"));
     }
 
 }

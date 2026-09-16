@@ -124,6 +124,49 @@ class ParserTest {
                 () -> parser.parse("event meeting /from 2019-10-15 /to", 0));
     }
 
+
+    @Test
+    void parse_extraWhitespace_acceptsCommandsAndParameters() throws TopazException {
+        for (String command : new String[] {"  todo   read book  ", "todo\tread book",
+                "deadline  report  /by   2026-12-07 ",
+                "event meeting /from  8/12/2026   1400 /to 8/12/2026 1600",
+                "duration task\t/for\t2h"}) {
+            assertInstanceOf(AddCommand.class, parser.parse(command, 0));
+        }
+        assertInstanceOf(ListCommand.class, parser.parse("\t list  ", 0));
+        assertInstanceOf(ExitCommand.class, parser.parse("  bye\t", 0));
+    }
+
+    @Test
+    void parse_ambiguousParameters_rejectsInsteadOfIgnoringInput() {
+        for (String command : new String[] {"deadline task /by 2026-12-07 /by 2026-12-08",
+                "deadline task /by 2026-12-07 /by", "deadline task /at 2026-12-07",
+                "event task /to 2026-12-08 /from 2026-12-07",
+                "event task /from 2026-12-07 /to 2026-12-08 /to",
+                "event task /from 2026-12-07 /from 2026-12-08 /to 2026-12-09",
+                "duration task /for2h", "list extra", "bye extra"}) {
+            assertThrows(TopazException.class, () -> parser.parse(command, 0), command);
+        }
+    }
+
+    @Test
+    void parse_emptyFields_reportsMissingParameter() {
+        assertDurationError("deadline /by 2026-12-07", "The description of a deadline cannot be empty.");
+        assertDurationError("event /from 2026-12-07 /to 2026-12-08",
+                "The description of an event cannot be empty.");
+        assertDurationError("event meeting /from /to 2026-12-08", "The event start time cannot be empty.");
+        assertDurationError("event meeting /from 2026-12-07 /to", "The event end time cannot be empty.");
+    }
+
+    @Test
+    void parse_controlCharactersAndInvalidNumbers_reportsError() {
+        for (String command : new String[] {null, "", "  ", "todo bad\nrecord", "todo bad\u0000record",
+                "todo bad\rrecord", "todo bad\u2028record", "mark +1", "mark 1.0",
+                "mark 99999999999999999999999", "mark 1 2", "mark \uff11"}) {
+            assertThrows(TopazException.class, () -> parser.parse(command, 2));
+        }
+    }
+
     private void assertDurationError(String command, String expectedMessage) {
         TopazException exception = assertThrows(TopazException.class, () -> parser.parse(command, 0));
 

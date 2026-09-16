@@ -50,6 +50,11 @@ public class Deadline extends Task {
         return super.getDescription() + " (by: " + formattedBy + ")";
     }
 
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        return by.equals(((Deadline) other).by);
+    }
+
     /**
      * Serializes this deadline for storage.
      *

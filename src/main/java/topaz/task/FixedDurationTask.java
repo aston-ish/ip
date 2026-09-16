@@ -39,6 +39,11 @@ public class FixedDurationTask extends Task {
         return super.getDescription() + " (for: " + formatDuration() + ")";
     }
 
+    @Override
+    protected boolean hasSameSchedule(Task other) {
+        return durationMinutes == ((FixedDurationTask) other).durationMinutes;
+    }
+
     /**
      * Serializes this task for storage.
      *

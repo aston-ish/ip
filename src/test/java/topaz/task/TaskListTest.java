@@ -198,4 +198,23 @@ class TaskListTest {
 
         assertThrows(IndexOutOfBoundsException.class, () -> taskList.markAsNotDone(0));
     }
+    @Test
+    void containsDuplicate_matchesDetailsWithoutLosingSchedulePrecision() {
+        LocalDateTime start = LocalDateTime.of(2026, 12, 7, 12, 0);
+        Task completed = new Todo("Read  Book");
+        completed.markAsDone();
+        TaskList tasks = new TaskList(List.of(completed, new Deadline("return book", start, true),
+                new Event("meeting", start, start.plusHours(1), true, true),
+                new FixedDurationTask("exercise", 60)));
+
+        assertTrue(tasks.containsDuplicate(new Todo(" read book ")));
+        assertTrue(tasks.containsDuplicate(new Deadline("RETURN BOOK", start, true)));
+        assertTrue(tasks.containsDuplicate(new Event("meeting", start, start.plusHours(1), true, true)));
+        assertTrue(tasks.containsDuplicate(new FixedDurationTask("exercise", 60)));
+        assertFalse(tasks.containsDuplicate(new Deadline("return book", start.plusSeconds(1), true)));
+        assertFalse(tasks.containsDuplicate(new Event("meeting", start, start.plusHours(2), true, true)));
+        assertFalse(tasks.containsDuplicate(new FixedDurationTask("exercise", 61)));
+        assertFalse(tasks.containsDuplicate(new Todo("return book")));
+    }
+
 }
