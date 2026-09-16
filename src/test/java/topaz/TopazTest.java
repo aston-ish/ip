@@ -1,7 +1,9 @@
 package topaz;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -59,4 +61,38 @@ class TopazTest {
         assertTrue(response.contains("Hope to see you again soon"));
         assertTrue(topaz.isExitRequested());
     }
+    @Test
+    void getResponse_errorThenSuccess_resetsErrorStatus() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+        assertFalse(topaz.isResponseError());
+        for (String command : new String[] {"unknown", "todo", "mark 99", "deadline task /by invalid"}) {
+            topaz.getResponse(command);
+            assertTrue(topaz.isResponseError());
+            topaz.getResponse("list");
+            assertFalse(topaz.isResponseError());
+        }
+        topaz.getResponse("todo ERROR is part of this description");
+        assertFalse(topaz.isResponseError());
+    }
+
+    @Test
+    void getResponse_unreadableSaveFile_marksError() {
+        Topaz topaz = new Topaz(temporaryDirectory);
+        assertTrue(topaz.getResponse("list").contains("not a file"));
+        assertTrue(topaz.isResponseError());
+    }
+
+    @Test
+    void getResponse_saveFailureThenRecovery_updatesErrorStatus() throws Exception {
+        Path saveFile = temporaryDirectory.resolve("Topaz.txt");
+        Topaz topaz = new Topaz(saveFile);
+        topaz.getResponse("list");
+        Files.createDirectory(saveFile);
+        assertTrue(topaz.getResponse("todo read book").contains("Unable to save"));
+        assertTrue(topaz.isResponseError());
+        Files.delete(saveFile);
+        topaz.getResponse("todo read book");
+        assertFalse(topaz.isResponseError());
+    }
+
 }

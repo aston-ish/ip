@@ -1,12 +1,9 @@
 package topaz.ui;
 
-import java.util.Objects;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import topaz.Topaz;
 
@@ -27,11 +24,6 @@ public class MainWindow {
     private Button sendButton;
 
     private Topaz topaz;
-    private final Image userImage = new Image(Objects.requireNonNull(
-            getClass().getResourceAsStream("/images/user.png")));
-    private final Image topazImage = new Image(Objects.requireNonNull(
-            getClass().getResourceAsStream("/images/topaz.png")));
-
     /**
      * Configures automatic scrolling when a dialog box is added.
      */
@@ -48,7 +40,7 @@ public class MainWindow {
     public void setTopaz(Topaz topaz) {
         this.topaz = topaz;
         dialogContainer.getChildren().add(DialogBox.getTopazDialog(
-                "Hello! I'm Topaz.\nWhat can I do for you?", topazImage));
+                "Hello! I'm Topaz.\nWhat can I do for you?"));
     }
 
     /**
@@ -58,9 +50,11 @@ public class MainWindow {
     private void handleUserInput() {
         String input = userInput.getText();
         String response = topaz.getResponse(input);
+        DialogBox responseDialog = topaz.isResponseError()
+                ? DialogBox.getErrorDialog(response) : DialogBox.getTopazDialog(response);
         dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input, userImage),
-                DialogBox.getTopazDialog(response, topazImage));
+                DialogBox.getUserDialog(input),
+                responseDialog);
         userInput.clear();
         if (topaz.isExitRequested()) {
             userInput.setDisable(true);
