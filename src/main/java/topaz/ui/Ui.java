@@ -12,13 +12,12 @@ import topaz.task.TaskList;
  * Handles console input and all messages shown to the user.
  */
 public class Ui {
+    public static final String NAME = "Gronk";
+    public static final String CATCHPHRASE = "GRONK!";
+    public static final String WELCOME_MESSAGE = "I'm Gronk, your mighty task keeper.\n"
+            + "Give Gronk a task. We crush it together!";
+
     private static final String SEPARATOR = "____________________________________________________________";
-    private static final String BANNER = " _____                 _          \n"
-            + "|_   _|__  _ __   __ _| |__       \n"
-            + "  | |/ _ \\| '_ \\ / _` | '_ \\      \n"
-            + "  | | (_) | |_) | (_| | | | |     \n"
-            + "  |_|\\___/| .__/ \\__,_|_| |_|     \n"
-            + "           |_|                      \n";
 
     private final Scanner scanner;
     private final Consumer<String> output;
@@ -66,19 +65,17 @@ public class Ui {
      */
     public void showWelcome() {
         output.accept(SEPARATOR);
-        output.accept(BANNER);
-        output.accept("Hello! I'm Topaz.");
-        output.accept("What can I do for you?");
+        showResponse(WELCOME_MESSAGE);
         output.accept(SEPARATOR);
     }
 
     /**
-     * Shows an error that prevented Topaz from starting.
+     * Shows an error that prevented Gronk from starting.
      *
      * @param exception the startup error to display
      */
     public void showLoadingError(TopazException exception) {
-        output.accept(" " + exception.getMessage());
+        showResponse(" Gronk hit a snag. " + exception.getMessage());
     }
 
     /**
@@ -87,7 +84,7 @@ public class Ui {
      * @param tasks the task list to display
      */
     public void showTaskList(TaskList tasks) {
-        output.accept(" Here are the tasks in your list:");
+        showResponse(" Gronk guards your task pile:");
         showNumberedTasks(tasks.asList());
     }
 
@@ -97,7 +94,7 @@ public class Ui {
      * @param matchingTasks the matching tasks to display
      */
     public void showMatchingTasks(List<Task> matchingTasks) {
-        output.accept(" Here are the matching tasks in your list:");
+        showResponse(" Gronk sniffed out these tasks:");
         showNumberedTasks(matchingTasks);
     }
 
@@ -121,7 +118,7 @@ public class Ui {
      * @param taskCount the number of tasks after adding the task
      */
     public void showAddedTask(Task task, int taskCount) {
-        output.accept(" Got it. I've added this task:");
+        showResponse(" Gronk grabbed a new task:");
         output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
         output.accept(" Now you have " + taskCount + " tasks in the list.");
     }
@@ -132,7 +129,7 @@ public class Ui {
      * @param task the task that was marked as done
      */
     public void showMarkedTask(Task task) {
-        output.accept(" Nice! I've marked this task as done:");
+        showResponse(" Task crushed! Gronk marks it done:");
         output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
     }
 
@@ -142,7 +139,7 @@ public class Ui {
      * @param task the task that was marked as not done
      */
     public void showUnmarkedTask(Task task) {
-        output.accept(" OK, I've marked this task as not done yet:");
+        showResponse(" Back to the pile! Gronk marks it not done:");
         output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
     }
 
@@ -153,7 +150,7 @@ public class Ui {
      * @param taskCount the number of tasks remaining after removal
      */
     public void showDeletedTask(Task task, int taskCount) {
-        output.accept(" Noted. I've removed this task:");
+        showResponse(" Gronk tossed this task out:");
         output.accept("   " + task.getDisplayIcon() + " " + task.getDescription());
         output.accept(" Now you have " + taskCount + " tasks in the list.");
     }
@@ -164,7 +161,17 @@ public class Ui {
      * @param exception the command error to display
      */
     public void showError(TopazException exception) {
-        output.accept(" " + exception.getMessage());
+        showResponse(" Gronk hit a snag. " + exception.getMessage());
+    }
+
+    /**
+     * Announces a response with Gronk's signature battle cry.
+     *
+     * @param message the response body, including any useful command guidance
+     */
+    private void showResponse(String message) {
+        output.accept(CATCHPHRASE);
+        output.accept(message);
     }
 
     /**
@@ -178,7 +185,7 @@ public class Ui {
      * Shows the goodbye message and closing separator.
      */
     public void showGoodbye() {
-        output.accept(" Bye. Hope to see you again soon!");
+        showResponse(" Gronk rests now. Come back strong!");
         showSeparator();
     }
 }

@@ -8,7 +8,9 @@
     <children>
         <VBox fx:id="message" minWidth="0.0" maxWidth="Infinity" spacing="6.0">
             <children>
-                <Label fx:id="heading" text="TOPAZ" styleClass="message-heading" />
+                <Label fx:id="heading" text="GRONK!" styleClass="message-heading" />
+                <Label fx:id="errorHeading" text="ERROR / Gronk hit a snag"
+                       styleClass="error-heading" visible="false" managed="false" wrapText="true" />
                 <Label fx:id="dialog" minWidth="0.0" minHeight="-Infinity" maxWidth="Infinity"
                        styleClass="message-text" wrapText="true" />
             </children>

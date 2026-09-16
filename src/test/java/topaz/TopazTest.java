@@ -24,7 +24,7 @@ class TopazTest {
         String addResponse = topaz.getResponse("todo read book");
         String listResponse = topaz.getResponse("list");
 
-        assertTrue(addResponse.contains("I've added this task"));
+        assertTrue(addResponse.contains("Gronk grabbed a new task"));
         assertTrue(listResponse.contains("[T][ ] read book"));
     }
 
@@ -58,9 +58,10 @@ class TopazTest {
 
         String response = topaz.getResponse("bye");
 
-        assertTrue(response.contains("Hope to see you again soon"));
+        assertTrue(response.contains("Gronk rests now"));
         assertTrue(topaz.isExitRequested());
     }
+
     @Test
     void getResponse_errorThenSuccess_resetsErrorStatus() {
         Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
@@ -80,6 +81,7 @@ class TopazTest {
         Topaz topaz = new Topaz(temporaryDirectory);
         assertTrue(topaz.getResponse("list").contains("not a file"));
         assertTrue(topaz.isResponseError());
+        assertTrue(topaz.getResponse("list").startsWith("GRONK!" + System.lineSeparator()));
     }
 
     @Test
@@ -93,6 +95,16 @@ class TopazTest {
         Files.delete(saveFile);
         topaz.getResponse("todo read book");
         assertFalse(topaz.isResponseError());
+    }
+
+    @Test
+    void getResponse_eachCommand_usesGronkBattleCry() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+        String[] commands = {"todo lift rocks", "list", "find rocks", "mark 1", "unmark 1",
+                "delete 1", "unknown", "bye"};
+        for (String command : commands) {
+            assertTrue(topaz.getResponse(command).startsWith("GRONK!" + System.lineSeparator()));
+        }
     }
 
 }

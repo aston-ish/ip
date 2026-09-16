@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import topaz.Topaz;
 
 /**
- * Displays the Topaz graphical user interface.
+ * Displays the Gronk graphical user interface.
  */
 public class Main extends Application {
     private final Topaz topaz = new Topaz();
@@ -25,7 +25,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
         AnchorPane root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        stage.setTitle("Topaz");
+        stage.setTitle(Ui.NAME);
         stage.setScene(scene);
         fxmlLoader.<MainWindow>getController().setTopaz(topaz);
         stage.show();
