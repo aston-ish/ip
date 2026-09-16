@@ -990,3 +990,20 @@ GRONK!
  Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
+
+## Storage environment increment
+
+Normal command output remains unchanged; rerun all CLI sessions. JUnit covers
+missing files, blocked parent paths, directory targets, read-only save files,
+invalid configured paths, malformed UTF-8, a byte-order mark, corrupt line
+numbers, save replacement, encoding failure during a write, recovery after repair, and mutation rollback.
+The read-only test skips only if the host account overrides file permissions.
+Disk-full and abrupt-power-loss scenarios are not simulated by this CLI runner.
+
+For a GUI check, use a disposable `topaz.dataFile` containing an invalid record,
+submit `list`, and verify a red error card reports the bad line. Repair that
+file and submit `list` again; it should recover without loading partial data.
+Do not run this check against the user's real saved tasks.
+
+The separate `test/storage-ui-test-plan.md` checks startup output for corrupt
+saved data using its own disposable fixture.

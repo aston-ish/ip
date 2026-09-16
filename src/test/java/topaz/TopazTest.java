@@ -134,4 +134,29 @@ class TopazTest {
         assertFalse(topaz.getResponse("list").contains("[E]"));
     }
 
+    @Test
+    void getResponse_invalidConfiguredPath_returnsErrorInsteadOfCrashing() {
+        for (String path : new String[] {"bad\u0000path", "   "}) {
+            Topaz topaz = new Topaz(path);
+            assertTrue(topaz.getResponse("list").contains("Check topaz.dataFile"));
+            assertTrue(topaz.isResponseError());
+        }
+    }
+
+    @Test
+    void getResponse_corruptFileThenRepair_recoversWithoutPartialLoad() throws Exception {
+        Path file = temporaryDirectory.resolve("repair.txt");
+        String invalid = "T | 0 | first\nX | 0 | broken\n";
+        Files.writeString(file, invalid);
+        Topaz topaz = new Topaz(file);
+        assertTrue(topaz.getResponse("todo should not be added").contains("line 2"));
+        assertTrue(topaz.isResponseError());
+        assertEquals(invalid, Files.readString(file));
+        Files.writeString(file, "T | 0 | repaired\n");
+        String response = topaz.getResponse("list");
+        assertFalse(topaz.isResponseError());
+        assertTrue(response.contains("1.[T][ ] repaired"));
+        assertFalse(response.contains("first"));
+    }
+
 }

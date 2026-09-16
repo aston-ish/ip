@@ -45,3 +45,18 @@ Impossible dates and times are rejected. Duplicate tasks are rejected when
 type, description, and dates or duration match. Description comparison ignores
 case and repeated spaces, and completion status does not make a task unique.
 Different dates, durations, or task types remain valid separate tasks.
+
+## Storage errors and recovery
+
+A missing save file starts an empty list. Other read failures leave the file
+untouched: check the reported line for malformed or duplicate tasks, restore a
+backup if needed, and retry the command in the GUI (or restart the CLI).
+Save files must be UTF-8; a leading UTF-8 byte-order mark is accepted.
+
+Changes are written to a temporary file in the same directory and atomically
+replace the original only after writing finishes. A failed save rolls back
+the command in memory. Check permissions, free disk space, file locks, and
+`topaz.dataFile` if an error appears. Save targets must be regular files;
+read-only files and symbolic-link targets are not replaced. If the file system
+cannot provide atomic replacement, use a local data folder. An interrupted
+save can leave a harmless `gronk-*.tmp` file beside the original.

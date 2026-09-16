@@ -1,9 +1,11 @@
 package topaz.storage;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -92,6 +94,92 @@ class StorageTest {
             Files.writeString(file, content);
             assertThrows(TopazException.class, () -> new Storage(file).load());
             assertEquals(content, Files.readString(file));
+        }
+    }
+
+    @Test
+    void load_corruptRecord_reportsLineAndPreservesFile() throws IOException {
+        Path file = temporaryDirectory.resolve("corrupt.txt");
+        String content = "T | 0 | valid\n\nX | 0 | corrupt\n";
+        Files.writeString(file, content);
+        TopazException error = assertThrows(TopazException.class, () -> new Storage(file).load());
+        assertTrue(error.getMessage().contains("line 3"));
+        assertEquals(content, Files.readString(file));
+    }
+
+    @Test
+    void load_malformedUtf8_rejectsInsteadOfReplacingCharacters() throws IOException {
+        Path file = temporaryDirectory.resolve("encoding.txt");
+        byte[] bytes = {(byte) 0xc3, 0x28};
+        Files.write(file, bytes);
+        TopazException error = assertThrows(TopazException.class, () -> new Storage(file).load());
+        assertTrue(error.getMessage().contains("UTF-8"));
+        assertArrayEquals(bytes, Files.readAllBytes(file));
+    }
+
+    @Test
+    void load_bomAndBlankLines_acceptsValidText() throws Exception {
+        Path file = temporaryDirectory.resolve("bom.txt");
+        Files.writeString(file, "\ufeffT | 0 | read book\n\n");
+        assertEquals("read book", new Storage(file).load().get(0).getDescription());
+    }
+
+    @Test
+    void save_existingFile_replacesCompletelyAndCleansStagingFiles() throws Exception {
+        Path file = temporaryDirectory.resolve("tasks.txt");
+        Storage storage = new Storage(file);
+        storage.save(List.of(new Todo("original"), new Todo("another")));
+        storage.save(List.of(new Todo("replacement")));
+        assertEquals(List.of("T | 0 | replacement"), Files.readAllLines(file));
+        try (var files = Files.list(temporaryDirectory)) {
+            assertEquals(List.of(file), files.toList());
+        }
+    }
+
+    @Test
+    void save_readOnlyFile_keepsOriginalContents() throws Exception {
+        Path file = temporaryDirectory.resolve("protected.txt");
+        Files.writeString(file, "T | 0 | original\n");
+        assumeTrue(file.toFile().setReadOnly());
+        try {
+            assumeTrue(!Files.isWritable(file), "This account can override read-only permissions.");
+            TopazException error = assertThrows(TopazException.class,
+                    () -> new Storage(file).save(List.of(new Todo("replacement"))));
+            assertTrue(error.getMessage().contains("access denied"));
+            assertEquals("T | 0 | original\n", Files.readString(file));
+        } finally {
+            assertTrue(file.toFile().setWritable(true));
+        }
+    }
+
+    @Test
+    void save_blockedDirectory_reportsFailureWithoutChangingBlocker() throws IOException {
+        Path blocker = temporaryDirectory.resolve("blocker");
+        Files.writeString(blocker, "keep this file");
+        Storage storage = new Storage(blocker.resolve("tasks.txt"));
+        assertThrows(TopazException.class, () -> storage.save(List.of(new Todo("task"))));
+        assertThrows(TopazException.class, storage::load);
+        assertEquals("keep this file", Files.readString(blocker));
+    }
+
+    @Test
+    void save_directoryTarget_reportsFailureWithoutReplacingDirectory() throws IOException {
+        Path folder = temporaryDirectory.resolve("folder");
+        Files.createDirectory(folder);
+        assertThrows(TopazException.class, () -> new Storage(folder).save(List.of(new Todo("task"))));
+        assertTrue(Files.isDirectory(folder));
+    }
+
+    @Test
+    void save_encodingFailure_keepsOriginalAndRemovesStagingFile() throws Exception {
+        Path file = temporaryDirectory.resolve("original.txt");
+        String original = "T | 0 | original\n";
+        Files.writeString(file, original);
+        List<Task> tasks = List.of(new Todo("first staged record"), new Todo("invalid surrogate \ud800"));
+        assertThrows(TopazException.class, () -> new Storage(file).save(tasks));
+        assertEquals(original, Files.readString(file));
+        try (var files = Files.list(temporaryDirectory)) {
+            assertEquals(List.of(file), files.toList());
         }
     }
 
