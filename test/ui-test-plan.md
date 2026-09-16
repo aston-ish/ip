@@ -7,8 +7,8 @@ iteration; manually verify that submitting text with Enter or Send adds a
 right-aligned user dialog and a left-aligned response dialog. Verify that `todo`,
 `deadline`, `event`, `list`, `find`, `mark`, `unmark`, and `delete` produce the
 same responses and save task changes as their command-line equivalents. Verify
-that a welcome dialog appears on launch, user commands appear as compact blue bubbles without avatars and Topaz
-responses appear as full-width cards labeled TOPAZ, and `bye` disables both the input field and Send button after displaying
+that a welcome dialog appears on launch, user commands appear as compact forest-green bubbles without avatars and Topaz
+responses appear as full-width cards labeled GRONK!, and `bye` disables both the input field and Send button after displaying
 the farewell message.
 
 Record every requested command-line UI test case here before running the test session.
@@ -71,7 +71,8 @@ bye
 Expected output after startup:
 
 ```text
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][X] return book (by: Dec 07 2026)
  2.[E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
 ```
@@ -97,47 +98,51 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] read book
  Now you have 1 tasks in the list.
 ____________________________________________________________
- The description of a todo cannot be empty.
+GRONK!
+ Gronk hit a snag. The description of a todo cannot be empty.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read book
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] return book (by: Dec 07 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Use: deadline <description> /by <time>.
+GRONK!
+ Gronk hit a snag. Use: deadline <description> /by <time>.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read book
  2.[D][ ] return book (by: Dec 07 2026)
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
- Use: event <description> /from <time> /to <time>.
+GRONK!
+ Gronk hit a snag. Use: event <description> /from <time> /to <time>.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read book
  2.[D][ ] return book (by: Dec 07 2026)
  3.[E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -158,35 +163,35 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] read book
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] return book (by: Dec 07 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] buy milk
  Now you have 3 tasks in the list.
 ____________________________________________________________
- Here are the matching tasks in your list:
+GRONK!
+ Gronk sniffed out these tasks:
  1.[T][ ] read book
  2.[D][ ] return book (by: Dec 07 2026)
 ____________________________________________________________
- Please provide a keyword after find.
+GRONK!
+ Gronk hit a snag. Please provide a keyword after find.
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -208,29 +213,30 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Task details cannot contain the | character.
+GRONK!
+ Gronk hit a snag. Task details cannot contain the | character.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
 ____________________________________________________________
- Task details cannot contain the | character.
+GRONK!
+ Gronk hit a snag. Task details cannot contain the | character.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
 ____________________________________________________________
- Task details cannot contain the | character.
+GRONK!
+ Gronk hit a snag. Task details cannot contain the | character.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -251,36 +257,36 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] read book
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Nice! I've marked this task as done:
+GRONK!
+ Task crushed! Gronk marks it done:
    [T][X] read book
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] return book (by: Dec 07 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [E][ ] project meeting (from: Dec 08 2026 1400 to: Dec 08 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
- Noted. I've removed this task:
+GRONK!
+ Gronk tossed this task out:
    [T][X] read book
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -312,42 +318,46 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] read book
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Nice! I've marked this task as done:
+GRONK!
+ Task crushed! Gronk marks it done:
    [T][X] read book
 ____________________________________________________________
- The task number must be an integer.
+GRONK!
+ Gronk hit a snag. The task number must be an integer.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][X] read book
 ____________________________________________________________
- OK, I've marked this task as not done yet:
+GRONK!
+ Back to the pile! Gronk marks it not done:
    [T][ ] read book
 ____________________________________________________________
- That task number is not in your list.
+GRONK!
+ Gronk hit a snag. That task number is not in your list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read book
 ____________________________________________________________
- I'm sorry, but I don't know what that means.
+GRONK!
+ Gronk hit a snag. I'm sorry, but I don't know what that means.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read book
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -373,43 +383,45 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] first
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] second (by: Dec 09 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
- Noted. I've removed this task:
+GRONK!
+ Gronk tossed this task out:
    [D][ ] second (by: Dec 09 2026)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] first
  2.[E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
 ____________________________________________________________
- Please provide a task number after delete.
+GRONK!
+ Gronk hit a snag. Please provide a task number after delete.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] first
  2.[E][ ] third (from: Dec 10 2026 1400 to: Dec 10 2026 1600)
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -433,42 +445,45 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] alpha
  Now you have 1 tasks in the list.
 ____________________________________________________________
- That task number is not in your list.
+GRONK!
+ Gronk hit a snag. That task number is not in your list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] alpha
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] beta
  Now you have 2 tasks in the list.
 ____________________________________________________________
- The task number must be an integer.
+GRONK!
+ Gronk hit a snag. The task number must be an integer.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] alpha
  2.[T][ ] beta
 ____________________________________________________________
- I'm sorry, but I don't know what that means.
+GRONK!
+ Gronk hit a snag. I'm sorry, but I don't know what that means.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] alpha
  2.[T][ ] beta
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -486,21 +501,18 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- The event start time cannot be empty.
+GRONK!
+ Gronk hit a snag. The event start time cannot be empty.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -519,26 +531,24 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] first task
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] first task
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -564,54 +574,59 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] return book (by: Dec 02 2019 1800)
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][ ] return book (by: Dec 02 2019 1800)
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [D][ ] review notes (by: Oct 15 2019)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][ ] return book (by: Dec 02 2019 1800)
  2.[D][ ] review notes (by: Oct 15 2019)
 ____________________________________________________________
- Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+GRONK!
+ Gronk hit a snag. Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][ ] return book (by: Dec 02 2019 1800)
  2.[D][ ] review notes (by: Oct 15 2019)
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
  Now you have 3 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][ ] return book (by: Dec 02 2019 1800)
  2.[D][ ] review notes (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
 ____________________________________________________________
- Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+GRONK!
+ Gronk hit a snag. Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[D][ ] return book (by: Dec 02 2019 1800)
  2.[D][ ] review notes (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Oct 15 2019 1400 to: Oct 15 2019 1600)
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -629,24 +644,21 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [E][ ] conference (from: Oct 15 2019 to: Oct 16 2019)
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[E][ ] conference (from: Oct 15 2019 to: Oct 16 2019)
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -673,46 +685,52 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [T][ ] read
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Please provide a task number after mark.
+GRONK!
+ Gronk hit a snag. Please provide a task number after mark.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read
 ____________________________________________________________
- Please provide a task number after unmark.
+GRONK!
+ Gronk hit a snag. Please provide a task number after unmark.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read
 ____________________________________________________________
- The deadline time cannot be empty.
+GRONK!
+ Gronk hit a snag. The deadline time cannot be empty.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read
 ____________________________________________________________
- The event start time cannot be empty.
+GRONK!
+ Gronk hit a snag. The event start time cannot be empty.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read
 ____________________________________________________________
- The event end time cannot be empty.
+GRONK!
+ Gronk hit a snag. The event end time cannot be empty.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[T][ ] read
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -737,43 +755,47 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [F][ ] read the sales report (for: 2 hours)
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [F][ ] take a break (for: 90 minutes)
  Now you have 2 tasks in the list.
 ____________________________________________________________
- Here are the tasks in your list:
+GRONK!
+ Gronk guards your task pile:
  1.[F][ ] read the sales report (for: 2 hours)
  2.[F][ ] take a break (for: 90 minutes)
 ____________________________________________________________
- Nice! I've marked this task as done:
+GRONK!
+ Task crushed! Gronk marks it done:
    [F][X] read the sales report (for: 2 hours)
 ____________________________________________________________
- Here are the matching tasks in your list:
+GRONK!
+ Gronk sniffed out these tasks:
  1.[F][X] read the sales report (for: 2 hours)
 ____________________________________________________________
- Use a duration as a positive whole number followed by h or m.
+GRONK!
+ Gronk hit a snag. Use a duration as a positive whole number followed by h or m.
 ____________________________________________________________
- The duration cannot be empty.
+GRONK!
+ Gronk hit a snag. The duration cannot be empty.
 ____________________________________________________________
- The description of a duration task cannot be empty.
+GRONK!
+ Gronk hit a snag. The description of a duration task cannot be empty.
 ____________________________________________________________
- Use: duration <description> /for <duration>.
+GRONK!
+ Gronk hit a snag. Use: duration <description> /for <duration>.
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -791,24 +813,21 @@ bye
 Expected output:
 ```text
 ____________________________________________________________
- _____                 _          
-|_   _|__  _ __   __ _| |__       
-  | |/ _ \| '_ \ / _` | '_ \      
-  | | (_) | |_) | (_| | | | |     
-  |_|\___/| .__/ \__,_|_| |_|     
-           |_|                      
-
-Hello! I'm Topaz.
-What can I do for you?
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
 ____________________________________________________________
- Got it. I've added this task:
+GRONK!
+ Gronk grabbed a new task:
    [F][ ] read the sales report (for: 2 hours)
  Now you have 1 tasks in the list.
 ____________________________________________________________
- Nice! I've marked this task as done:
+GRONK!
+ Task crushed! Gronk marks it done:
    [F][X] read the sales report (for: 2 hours)
 ____________________________________________________________
- Bye. Hope to see you again soon!
+GRONK!
+ Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
 
@@ -823,7 +842,7 @@ F | 1 | read the sales report | 120
 CLI behavior is unchanged; existing cases remain applicable. The CLI runner
 cannot verify JavaFX styling. Manually check the welcome card, Enter and Send,
 a long command, a multi-line list, and window resizing: commands must wrap in
-right-aligned blue bubbles, while responses fill the width with a TOPAZ heading
+right-aligned forest-green bubbles, while responses fill the width with a GRONK! heading
 and left accent. No avatars or clipped text should appear.
 
 ## Error highlighting
@@ -831,7 +850,17 @@ and left accent. No avatars or clipped text should appear.
 CLI messages are unchanged; run the existing invalid-command cases. JavaFX
 JUnit tests check the error heading, text color, and isolation from normal
 cards. Manually submit `unknown`, `todo`, `mark 99`, and an invalid deadline:
-each response should have a TOPAZ / ERROR heading, pale red background, dark
+each response should have a GRONK! heading and separate red ERROR label, pale red background, dark
 red text, and red left border. Then submit `list`: the new card should use
 normal styling while previous error cards remain highlighted. Verify long
 errors wrap and Enter and Send both retain focus/scroll behavior.
+
+## Gronk personality
+
+All expected CLI replies now include GRONK! and Gronk's task-keeper voice.
+The existing cases cover greetings, all task commands, errors, and farewell.
+Manually check the window title is Gronk, each app response has a bold 26px
+green GRONK! heading, and user text has no added heading. Errors retain their
+red card and separate ERROR label while GRONK! stays green. Resize the window
+and submit with Enter and Send; the cry should appear once per response.
+The data file and command syntax remain compatible with existing tasks.

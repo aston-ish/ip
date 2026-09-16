@@ -1,6 +1,8 @@
-# Topaz project template
+# Gronk
 
-This is a project template for a greenfield Java project. It's named _Topaz_. Given below are instructions on how to use it.
+Gronk is a cheerful, mighty task keeper. Add to the task pile, crush completed
+tasks, and hear a signature **GRONK!** with every reply. The GUI uses large
+green battle cries, forest-green command bubbles, and distinct red error cards.
 
 ## Setting up in Intellij
 
@@ -13,14 +15,15 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    1. If there are any further prompts, accept the defaults.
 1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/Topaz.java` file, right-click it, and choose `Run Topaz.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
+1. Run `topaz.ui.Launcher` from `src/main/java/topaz/ui/Launcher.java` for the GUI,
+   or `topaz.Topaz` for the command-line interface. The greeting is:
+   ```text
+   GRONK!
+   I'm Gronk, your mighty task keeper.
+   Give Gronk a task. We crush it together!
    ```
-    _____                 _          
-   |_   _|__  _ __   __ _| |__       
-     | |/ _ \| '_ \ / _` | '_ \      
-     | | (_) | |_) | (_| | | | |     
-     |_|\___/| .__/ \__,_|_| |_|     
-              |_|                     
-   ```
+
+The existing `data/Topaz.txt` save file and `topaz.dataFile` option are retained
+so existing tasks continue to load.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.

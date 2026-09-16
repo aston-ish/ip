@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="600.0" prefWidth="400.0"
+<AnchorPane stylesheets="@main-window.css" prefHeight="600.0" prefWidth="400.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="topaz.ui.MainWindow">
@@ -22,7 +22,7 @@
         <HBox spacing="6.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0"
               AnchorPane.rightAnchor="8.0">
             <children>
-                <TextField fx:id="userInput" onAction="#handleUserInput" promptText="Type a command..."
+                <TextField fx:id="userInput" onAction="#handleUserInput" promptText="Give Gronk a command..."
                            HBox.hgrow="ALWAYS" />
                 <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput" text="Send" />
             </children>

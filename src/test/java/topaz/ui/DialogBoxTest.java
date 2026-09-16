@@ -41,10 +41,10 @@ class DialogBoxTest {
             Label userHeading = (Label) user.lookup(".message-heading");
             Label responseHeading = (Label) response.lookup(".message-heading");
             assertFalse(userHeading.isManaged());
-            assertEquals("TOPAZ", responseHeading.getText());
+            assertEquals("GRONK!", responseHeading.getText());
             assertTrue(responseHeading.isVisible());
             assertTrue(user.lookup(".user-dialog").getBoundsInParent().getWidth() <= 320);
-            assertTrue(response.lookup(".topaz-dialog").getBoundsInParent().getWidth() > 320);
+            assertTrue(response.lookup(".gronk-dialog").getBoundsInParent().getWidth() > 320);
             for (DialogBox box : new DialogBox[] {user, response}) {
                 Label message = (Label) box.lookup(".message-text");
                 assertEquals(text, message.getText());
@@ -57,6 +57,7 @@ class DialogBoxTest {
         Platform.runLater(check);
         check.get(10, TimeUnit.SECONDS);
     }
+
     @Test
     void errorDialog_failureThenNormalResponse_hasDistinctAppearance() throws Exception {
         FutureTask<Void> check = new FutureTask<>(() -> {
@@ -69,12 +70,42 @@ class DialogBoxTest {
 
             Label heading = (Label) error.lookup(".message-heading");
             Label message = (Label) error.lookup(".message-text");
-            assertEquals("TOPAZ / ERROR", heading.getText());
+            assertEquals("GRONK!", heading.getText());
+            assertEquals(javafx.scene.paint.Color.web("#237a35"), heading.getTextFill());
+            assertEquals(26, heading.getFont().getSize());
+            Label errorHeading = (Label) error.lookup(".error-heading");
+            assertTrue(errorHeading.isVisible());
+            assertTrue(errorHeading.getText().contains("ERROR"));
             assertEquals("Unknown command. Try list.", message.getText());
             assertEquals(javafx.scene.paint.Color.web("#7a271a"), message.getTextFill());
             assertTrue(error.lookup(".error-dialog") != null);
             assertTrue(normal.lookup(".error-dialog") == null);
-            assertEquals("TOPAZ", ((Label) normal.lookup(".message-heading")).getText());
+            assertEquals("GRONK!", ((Label) normal.lookup(".message-heading")).getText());
+            return null;
+        });
+        Platform.runLater(check);
+        check.get(10, TimeUnit.SECONDS);
+    }
+
+    @Test
+    void response_battleCry_movesOnlyLeadingCryToHeading() throws Exception {
+        FutureTask<Void> check = new FutureTask<>(() -> {
+            String body = "Gronk grabbed a new task:\n   [T][ ] shout GRONK!";
+            String text = "GRONK!" + System.lineSeparator() + body;
+            DialogBox response = DialogBox.getTopazDialog(text);
+            DialogBox user = DialogBox.getUserDialog(text);
+            VBox conversation = new VBox(response, user);
+            new Scene(conversation, 400, 600);
+            conversation.applyCss();
+            conversation.layout();
+
+            Label heading = (Label) response.lookup(".message-heading");
+            assertEquals("GRONK!", heading.getText());
+            assertEquals(26, heading.getFont().getSize());
+            assertEquals(javafx.scene.paint.Color.web("#237a35"), heading.getTextFill());
+            assertEquals(body, ((Label) response.lookup(".message-text")).getText());
+            assertEquals(text, ((Label) user.lookup(".message-text")).getText());
+            assertFalse(response.lookup(".error-heading").isManaged());
             return null;
         });
         Platform.runLater(check);

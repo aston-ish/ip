@@ -8,7 +8,7 @@ import javafx.scene.layout.VBox;
 import topaz.Topaz;
 
 /**
- * Controller for the main Topaz graphical user interface.
+ * Controller for the main Gronk graphical user interface.
  */
 public class MainWindow {
     @FXML
@@ -24,6 +24,7 @@ public class MainWindow {
     private Button sendButton;
 
     private Topaz topaz;
+
     /**
      * Configures automatic scrolling when a dialog box is added.
      */
@@ -40,7 +41,7 @@ public class MainWindow {
     public void setTopaz(Topaz topaz) {
         this.topaz = topaz;
         dialogContainer.getChildren().add(DialogBox.getTopazDialog(
-                "Hello! I'm Topaz.\nWhat can I do for you?"));
+                Ui.WELCOME_MESSAGE));
     }
 
     /**
@@ -58,7 +59,7 @@ public class MainWindow {
         userInput.clear();
         if (topaz.isExitRequested()) {
             userInput.setDisable(true);
-            userInput.setPromptText("Topaz session ended");
+            userInput.setPromptText("Gronk is resting. See you soon!");
             sendButton.setDisable(true);
         }
     }

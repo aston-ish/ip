@@ -11,7 +11,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 /**
- * Represents one message in the Topaz conversation.
+ * Represents one message in the Gronk conversation.
  */
 public class DialogBox extends HBox {
     @FXML
@@ -22,6 +22,9 @@ public class DialogBox extends HBox {
 
     @FXML
     private Label heading;
+
+    @FXML
+    private Label errorHeading;
 
     /**
      * Creates a dialog box containing the given message.
@@ -42,11 +45,11 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips a dialog box so that it is aligned on the left for a Topaz response.
+     * Configures a full-width, left-aligned application response card.
      */
-    private void flip() {
+    private void configureResponse() {
         setAlignment(Pos.TOP_LEFT);
-        message.getStyleClass().add("topaz-dialog");
+        message.getStyleClass().add("gronk-dialog");
         HBox.setHgrow(message, Priority.ALWAYS);
     }
 
@@ -73,7 +76,13 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getTopazDialog(String text) {
         DialogBox dialogBox = new DialogBox(text);
-        dialogBox.flip();
+        dialogBox.configureResponse();
+        dialogBox.heading.setText(Ui.CATCHPHRASE);
+        // Present the leading battle cry as a heading, preserving task text verbatim.
+        String prefix = Ui.CATCHPHRASE + System.lineSeparator();
+        if (text.startsWith(prefix)) {
+            dialogBox.dialog.setText(text.substring(prefix.length()));
+        }
         return dialogBox;
     }
 
@@ -85,7 +94,8 @@ public class DialogBox extends HBox {
      */
     public static DialogBox getErrorDialog(String text) {
         DialogBox dialogBox = getTopazDialog(text);
-        dialogBox.heading.setText("TOPAZ / ERROR");
+        dialogBox.errorHeading.setVisible(true);
+        dialogBox.errorHeading.setManaged(true);
         dialogBox.message.getStyleClass().add("error-dialog");
         return dialogBox;
     }
