@@ -27,3 +27,15 @@ The existing `data/Topaz.txt` save file and `topaz.dataFile` option are retained
 so existing tasks continue to load.
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Command validation
+
+Leading and trailing spaces, repeated spaces, and tabs are accepted. Commands
+must occupy one line; control characters and the save-file delimiter `|` are
+not allowed in task details. `list` and `bye` take no arguments. Task numbers
+use decimal digits and must refer to a task in the current list.
+
+For `deadline`, `event`, and `duration`, slash-prefixed words are reserved for
+parameters. Supply `/by`, `/from` then `/to`, or `/for` exactly once, with a
+value and a task description. Dates use `yyyy-MM-dd`, `d/M/yyyy HHmm`, or an
+ISO local date-time such as `2026-12-07T14:00`.

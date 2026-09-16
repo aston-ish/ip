@@ -24,9 +24,7 @@ import topaz.util.DateTimeParser;
  */
 public class Parser {
     private static final String DURATION_COMMAND = "duration";
-    private static final String DURATION_MARKER = " /for ";
-    private static final String EMPTY_DURATION_MARKER = " /for";
-    private static final String LEADING_DURATION_MARKER = "/for ";
+    private static final Pattern PARAMETER_PATTERN = Pattern.compile("(?<!\\S)/\\S+");
     private static final Pattern DURATION_PATTERN = Pattern.compile("([1-9]\\d*)([hm])");
     private static final long MINUTES_PER_HOUR = 60;
 
@@ -39,6 +37,13 @@ public class Parser {
      * @throws TopazException if the command or its arguments are invalid
      */
     public Command parse(String command, int taskCount) throws TopazException {
+        command = normalizeCommand(command);
+        if (isCommandWithArguments(command, "bye") && !command.equals("bye")) {
+            throw new TopazException("Use: bye (without extra arguments).");
+        }
+        if (isCommandWithArguments(command, "list") && !command.equals("list")) {
+            throw new TopazException("Use: list (without extra arguments).");
+        }
         if (command.equals("bye")) {
             return new ExitCommand();
         } else if (command.equals("list")) {
@@ -64,6 +69,20 @@ public class Parser {
     }
 
     /**
+     * Accepts extra horizontal whitespace while rejecting pasted control characters.
+     */
+    private String normalizeCommand(String command) throws TopazException {
+        if (command == null || command.isBlank()) {
+            throw new TopazException("Please enter a command, such as list or todo <description>.");
+        }
+        if (command.codePoints().anyMatch(character -> (Character.isISOControl(character) && character != '\t')
+                || character == '\u2028' || character == '\u2029')) {
+            throw new TopazException("Enter one command on a single line without control characters.");
+        }
+        return command.replaceAll("\\h+", " ").strip();
+    }
+
+    /**
      * Returns whether the input is a command word, optionally followed by arguments.
      */
     private boolean isCommandWithArguments(String input, String commandWord) {
@@ -82,6 +101,9 @@ public class Parser {
 
         int taskNumber;
         try {
+            if (!numberText.matches("-?[0-9]+")) {
+                throw new NumberFormatException();
+            }
             taskNumber = Integer.parseInt(numberText);
         } catch (NumberFormatException exception) {
             throw new TopazException("The task number must be an integer.");
@@ -135,18 +157,10 @@ public class Parser {
      * Parses a deadline command into an add command.
      */
     private Command parseDeadline(String command) throws TopazException {
-        String content = command.substring(8).trim();
-        int byIndex = content.indexOf(" /by ");
-        if (byIndex < 0) {
-            if (content.endsWith(" /by")) {
-                throw new TopazException("The deadline time cannot be empty.");
-            }
-            throw new TopazException("Use: deadline <description> /by <time>.");
-        }
-        String description = requireText(content.substring(0, byIndex),
-                "The description of a deadline cannot be empty.");
-        String by = requireText(content.substring(byIndex + 5),
-                "The deadline time cannot be empty.");
+        String[] fields = parseFields(command.substring(8).trim(),
+                new String[] {"/by"}, "Use: deadline <description> /by <time>.");
+        String description = requireText(fields[0], "The description of a deadline cannot be empty.");
+        String by = requireText(fields[1], "The deadline time cannot be empty.");
         LocalDateTime byDateTime = DateTimeParser.parse(by,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         return new AddCommand(new Deadline(description, byDateTime, DateTimeParser.hasTimeComponent(by)));
@@ -156,26 +170,11 @@ public class Parser {
      * Parses an event command into an add command.
      */
     private Command parseEvent(String command) throws TopazException {
-        String content = command.substring(5).trim();
-        int fromIndex = content.indexOf(" /from ");
-        int toIndex = content.indexOf(" /to ");
-        if (fromIndex < 0 || toIndex < 0 || fromIndex > toIndex
-                || content.indexOf(" /from ", fromIndex + 1) >= 0
-                || content.indexOf(" /to ", toIndex + 1) >= 0) {
-            if (content.endsWith(" /to")) {
-                throw new TopazException("The event end time cannot be empty.");
-            }
-            throw new TopazException("Use: event <description> /from <time> /to <time>.");
-        }
-        if (toIndex < fromIndex + 7) {
-            throw new TopazException("The event start time cannot be empty.");
-        }
-        String description = requireText(content.substring(0, fromIndex),
-                "The description of an event cannot be empty.");
-        String from = requireText(content.substring(fromIndex + 7, toIndex),
-                "The event start time cannot be empty.");
-        String to = requireText(content.substring(toIndex + 5),
-                "The event end time cannot be empty.");
+        String[] fields = parseFields(command.substring(5).trim(),
+                new String[] {"/from", "/to"}, "Use: event <description> /from <time> /to <time>.");
+        String description = requireText(fields[0], "The description of an event cannot be empty.");
+        String from = requireText(fields[1], "The event start time cannot be empty.");
+        String to = requireText(fields[2], "The event end time cannot be empty.");
         LocalDateTime fromDateTime = DateTimeParser.parse(from,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         LocalDateTime toDateTime = DateTimeParser.parse(to,
@@ -188,29 +187,35 @@ public class Parser {
      * Parses a fixed-duration task command into an add command.
      */
     private Command parseDuration(String command) throws TopazException {
-        String content = command.substring(DURATION_COMMAND.length()).trim();
-        int durationMarkerIndex = content.indexOf(DURATION_MARKER);
-        int durationStartIndex = durationMarkerIndex + DURATION_MARKER.length();
-        if (content.startsWith(LEADING_DURATION_MARKER)) {
-            durationMarkerIndex = 0;
-            durationStartIndex = LEADING_DURATION_MARKER.length();
-        }
-        if (durationMarkerIndex < 0) {
-            if (content.endsWith(EMPTY_DURATION_MARKER)) {
-                throw new TopazException("The duration cannot be empty.");
-            }
-            throw new TopazException("Use: duration <description> /for <duration>.");
-        }
-        if (content.indexOf(DURATION_MARKER, durationMarkerIndex + 1) >= 0
-                || content.endsWith(EMPTY_DURATION_MARKER)) {
-            throw new TopazException("Use: duration <description> /for <duration>.");
-        }
-
-        String description = requireText(content.substring(0, durationMarkerIndex),
-                "The description of a duration task cannot be empty.");
-        String durationText = requireText(content.substring(durationStartIndex),
-                "The duration cannot be empty.");
+        String[] fields = parseFields(command.substring(DURATION_COMMAND.length()).trim(),
+                new String[] {"/for"}, "Use: duration <description> /for <duration>.");
+        String description = requireText(fields[0], "The description of a duration task cannot be empty.");
+        String durationText = requireText(fields[1], "The duration cannot be empty.");
         return new AddCommand(new FixedDurationTask(description, parseDurationMinutes(durationText)));
+    }
+
+    /**
+     * Splits named parameters, requiring exactly one of each in the documented order.
+     * Slash-prefixed words are reserved as parameter markers in structured commands.
+     */
+    private String[] parseFields(String content, String[] markers, String usage) throws TopazException {
+        String[] fields = new String[markers.length + 1];
+        Matcher matcher = PARAMETER_PATTERN.matcher(content);
+        int fieldIndex = 0;
+        int fieldStart = 0;
+        while (matcher.find()) {
+            if (fieldIndex >= markers.length || !matcher.group().equals(markers[fieldIndex])) {
+                throw new TopazException(usage);
+            }
+            fields[fieldIndex] = content.substring(fieldStart, matcher.start());
+            fieldStart = matcher.end();
+            fieldIndex++;
+        }
+        if (fieldIndex != markers.length) {
+            throw new TopazException(usage);
+        }
+        fields[fieldIndex] = content.substring(fieldStart);
+        return fields;
     }
 
     /**

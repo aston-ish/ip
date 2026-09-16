@@ -864,3 +864,65 @@ green GRONK! heading, and user text has no added heading. Errors retain their
 red card and separate ERROR label while GRONK! stays green. Resize the window
 and submit with Enter and Send; the cry should appear once per response.
 The data file and command syntax remain compatible with existing tasks.
+
+### Test case: Whitespace and ambiguous commands
+
+Aim: Accept harmless spacing and reject empty or ambiguous commands without changing tasks or exiting.
+
+The input block intentionally contains trailing spaces and a whitespace-only line.
+
+Input:
+```text
+  todo   read book  
+list extra
+bye extra
+deadline /by 2026-12-07
+deadline return /by 2026-12-07 /by 2026-12-08
+event meet /from 2026-12-07 /to 2026-12-08 /to
+mark +1
+   
+ list 
+ bye 
+```
+
+Expected output:
+```text
+____________________________________________________________
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: list (without extra arguments).
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: bye (without extra arguments).
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The description of a deadline cannot be empty.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: deadline <description> /by <time>.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use: event <description> /from <time> /to <time>.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The task number must be an integer.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Please enter a command, such as list or todo <description>.
+____________________________________________________________
+GRONK!
+ Gronk guards your task pile:
+ 1.[T][ ] read book
+____________________________________________________________
+GRONK!
+ Gronk rests now. Come back strong!
+____________________________________________________________
+```
