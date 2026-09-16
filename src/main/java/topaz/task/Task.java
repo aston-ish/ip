@@ -1,5 +1,7 @@
 package topaz.task;
 
+import java.util.Locale;
+
 /**
  * Represents a task entered by the user.
  */
@@ -69,6 +71,32 @@ public abstract class Task {
      * @return the task type
      */
     public abstract TaskType getTaskType();
+
+    /**
+     * Returns whether another task has the same type, description, and schedule.
+     * Completion status, description case, and repeated spaces do not change identity.
+     *
+     * @param other the task to compare
+     * @return true if adding the other task would duplicate this task
+     */
+    public boolean hasSameDetails(Task other) {
+        return other != null && getTaskType() == other.getTaskType()
+                && normalizedDescription().equals(other.normalizedDescription()) && hasSameSchedule(other);
+    }
+
+    /**
+     * Normalizes only the underlying description, excluding display decorations.
+     */
+    private String normalizedDescription() {
+        return description.replaceAll("\\h+", " ").strip().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Compares scheduling details after the caller has checked that task types match.
+     */
+    protected boolean hasSameSchedule(Task other) {
+        return true;
+    }
 
     /**
      * Returns this task in the format used by the save file.

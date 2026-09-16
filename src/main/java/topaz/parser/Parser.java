@@ -179,6 +179,7 @@ public class Parser {
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
         LocalDateTime toDateTime = DateTimeParser.parse(to,
                 "Use a date as yyyy-MM-dd or d/M/yyyy HHmm.");
+        DateTimeParser.validateEventPeriod(fromDateTime, toDateTime);
         return new AddCommand(new Event(description, fromDateTime, toDateTime,
                 DateTimeParser.hasTimeComponent(from), DateTimeParser.hasTimeComponent(to)));
     }

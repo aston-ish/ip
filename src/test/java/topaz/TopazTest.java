@@ -1,5 +1,6 @@
 package topaz;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -105,6 +106,32 @@ class TopazTest {
         for (String command : commands) {
             assertTrue(topaz.getResponse(command).startsWith("GRONK!" + System.lineSeparator()));
         }
+    }
+
+    @Test
+    void getResponse_duplicateTask_keepsSavedTaskAndCompletion() throws Exception {
+        Path saveFile = temporaryDirectory.resolve("Topaz.txt");
+        Topaz topaz = new Topaz(saveFile);
+        topaz.getResponse("todo Read Book");
+        topaz.getResponse("mark 1");
+        String saved = Files.readString(saveFile);
+
+        assertTrue(topaz.getResponse("todo  read   book").contains("already exists"));
+        assertTrue(topaz.isResponseError());
+        assertEquals(saved, Files.readString(saveFile));
+        assertTrue(topaz.getResponse("list").contains("1.[T][X] Read Book"));
+        assertFalse(topaz.isResponseError());
+    }
+
+    @Test
+    void getResponse_invalidEventPeriod_doesNotAddTask() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
+        for (String end : new String[] {"2026-12-06", "2026-12-07"}) {
+            assertTrue(topaz.getResponse("event meeting /from 2026-12-07 /to " + end)
+                    .contains("end must be after"));
+            assertTrue(topaz.isResponseError());
+        }
+        assertFalse(topaz.getResponse("list").contains("[E]"));
     }
 
 }

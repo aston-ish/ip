@@ -39,3 +39,9 @@ For `deadline`, `event`, and `duration`, slash-prefixed words are reserved for
 parameters. Supply `/by`, `/from` then `/to`, or `/for` exactly once, with a
 value and a task description. Dates use `yyyy-MM-dd`, `d/M/yyyy HHmm`, or an
 ISO local date-time such as `2026-12-07T14:00`.
+
+Events must end strictly after they start; date-only endpoints mean midnight.
+Impossible dates and times are rejected. Duplicate tasks are rejected when
+type, description, and dates or duration match. Description comparison ignores
+case and repeated spaces, and completion status does not make a task unique.
+Different dates, durations, or task types remain valid separate tasks.

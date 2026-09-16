@@ -45,6 +45,13 @@ public class TaskList {
     }
 
     /**
+     * Returns whether the list already contains a task with the same details.
+     */
+    public boolean containsDuplicate(Task candidate) {
+        return tasks.stream().anyMatch(task -> task.hasSameDetails(candidate));
+    }
+
+    /**
      * Adds a task to the end of the list.
      *
      * @param task the task to add

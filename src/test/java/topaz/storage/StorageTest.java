@@ -82,4 +82,17 @@ class StorageTest {
         assertThrows(TopazException.class, () -> new Storage(signedDurationFile).load());
         assertThrows(TopazException.class, () -> new Storage(zeroDurationFile).load());
     }
+    @Test
+    void load_duplicateOrInvalidPeriod_rejectsFileWithoutChangingIt() throws IOException {
+        Path file = temporaryDirectory.resolve("bad-data.txt");
+        for (String content : new String[] {"T | 0 | read book\nT | 1 | READ BOOK\n",
+                "E | 0 | meeting | 2026-12-07 | 2026-12-07\n",
+                "E | 0 | meeting | 2026-12-08 | 2026-12-07\n",
+                "D | 0 | leap day | 2026-02-29\n"}) {
+            Files.writeString(file, content);
+            assertThrows(TopazException.class, () -> new Storage(file).load());
+            assertEquals(content, Files.readString(file));
+        }
+    }
+
 }

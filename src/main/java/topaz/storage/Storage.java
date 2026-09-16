@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -88,7 +89,11 @@ public class Storage {
                 while (fileScanner.hasNextLine()) {
                     String line = fileScanner.nextLine();
                     if (!line.isBlank()) {
-                        tasks.add(createTask(line));
+                        Task task = createTask(line);
+                        if (tasks.stream().anyMatch(existing -> existing.hasSameDetails(task))) {
+                            throw new TopazException("The save file contains a duplicate task.");
+                        }
+                        tasks.add(task);
                     }
                 }
                 if (fileScanner.ioException() != null) {
@@ -122,8 +127,10 @@ public class Storage {
             task = new Deadline(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
                     DateTimeParser.hasTimeComponent(values[3]));
         } else if (values.length == 5 && values[0].equals("E")) {
-            task = new Event(values[2], DateTimeParser.parse(values[3], "Unable to load a saved task."),
-                    DateTimeParser.parse(values[4], "Unable to load a saved task."),
+            LocalDateTime from = DateTimeParser.parse(values[3], "Unable to load a saved task.");
+            LocalDateTime to = DateTimeParser.parse(values[4], "Unable to load a saved task.");
+            DateTimeParser.validateEventPeriod(from, to);
+            task = new Event(values[2], from, to,
                     DateTimeParser.hasTimeComponent(values[3]), DateTimeParser.hasTimeComponent(values[4]));
         } else if (values.length == 4 && values[0].equals("F")) {
             task = new FixedDurationTask(values[2], parseDurationMinutes(values[3]));

@@ -926,3 +926,67 @@ GRONK!
  Gronk rests now. Come back strong!
 ____________________________________________________________
 ```
+
+### Test case: Reject invalid dates and duplicate tasks
+
+Aim: Reject zero-length/reversed events, impossible dates, and duplicates while preserving valid tasks.
+
+Input:
+```text
+todo read book
+mark 1
+todo READ BOOK
+event meeting /from 2026-12-07 /to 2026-12-07
+event meeting /from 2026-12-08 /to 2026-12-07
+deadline impossible /by 2026-02-30
+duration stretch /for 1h
+duration STRETCH /for 60m
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Task crushed! Gronk marks it done:
+   [T][X] read book
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. That task already exists. Use list to find it.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The event end must be after its start.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. The event end must be after its start.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. Use a date as yyyy-MM-dd or d/M/yyyy HHmm.
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [F][ ] stretch (for: 1 hour)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk hit a snag. That task already exists. Use list to find it.
+____________________________________________________________
+GRONK!
+ Gronk guards your task pile:
+ 1.[T][X] read book
+ 2.[F][ ] stretch (for: 1 hour)
+____________________________________________________________
+GRONK!
+ Gronk rests now. Come back strong!
+____________________________________________________________
+```
