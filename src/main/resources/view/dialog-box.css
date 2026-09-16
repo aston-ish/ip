@@ -1,12 +1,28 @@
-.label {
-    -fx-background-radius: 8;
-    -fx-padding: 8;
+.message-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #243247;
+}
+
+.message-heading {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #526782;
 }
 
 .user-dialog {
-    -fx-background-color: #dbeafe;
+    -fx-background-color: #2459a6;
+    -fx-background-radius: 14 14 3 14;
+    -fx-padding: 10 14;
+}
+
+.user-dialog .message-text {
+    -fx-text-fill: white;
 }
 
 .topaz-dialog {
-    -fx-background-color: #dcfce7;
+    -fx-background-color: #f4f7fb;
+    -fx-background-radius: 0 8 8 0;
+    -fx-border-color: #8ca7cb;
+    -fx-border-width: 0 0 0 3;
+    -fx-padding: 12 14;
 }

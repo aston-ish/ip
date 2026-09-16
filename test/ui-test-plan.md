@@ -7,8 +7,8 @@ iteration; manually verify that submitting text with Enter or Send adds a
 right-aligned user dialog and a left-aligned response dialog. Verify that `todo`,
 `deadline`, `event`, `list`, `find`, `mark`, `unmark`, and `delete` produce the
 same responses and save task changes as their command-line equivalents. Verify
-that a welcome dialog appears on launch, each dialog uses the correct speaker
-avatar, and `bye` disables both the input field and Send button after displaying
+that a welcome dialog appears on launch, user commands appear as compact blue bubbles without avatars and Topaz
+responses appear as full-width cards labeled TOPAZ, and `bye` disables both the input field and Send button after displaying
 the farewell message.
 
 Record every requested command-line UI test case here before running the test session.
@@ -817,3 +817,11 @@ Expected `data/ui-test.txt` after this case:
 ```text
 F | 1 | read the sales report | 120
 ```
+
+## Asymmetric GUI presentation
+
+CLI behavior is unchanged; existing cases remain applicable. The CLI runner
+cannot verify JavaFX styling. Manually check the welcome card, Enter and Send,
+a long command, a multi-line list, and window resizing: commands must wrap in
+right-aligned blue bubbles, while responses fill the width with a TOPAZ heading
+and left accent. No avatars or clipped text should appear.
