@@ -96,20 +96,21 @@ compatibility/deprecation warnings on Java 25, but the tested GUI runs.
 - Two peer reviews are verified on September 3, 2026 (before the Week 4 deadline):
   [PR #407](https://github.com/NUS-CS2103-AY2627-S1/ip/pull/407#pullrequestreview-5103525891)
   and [PR #61](https://github.com/NUS-CS2103-AY2627-S1/ip/pull/61#pullrequestreview-5103830556).
-- The GitHub API confirms the published `Level-10` tag, although the local tag list
-  lacks it. Do not create a conflicting replacement. Other implementation tags
+- The GitHub API confirms the published `Level-10` tag, now also fetched locally.
+  No conflicting replacement was created. Other implementation tags
   including BCD-Extension and the three existing optional increments are published.
-- The dashboard's dynamically loaded individual row was not verified. Check the
+- The dashboard identifies students by masked IDs, not GitHub usernames. The
+  individual row could not be identified without the user's masked ID. Check the
   [iP progress dashboard](https://nus-cs2103-ay2627-s1.github.io/dashboards/contents/ip-progress.html)
   after publishing, particularly Git Standard and final deliverables.
 
 ## Final publication steps
 
-1. Review and commit the completed changes with convention-compliant messages,
-   then push. `AGENTS.md` requires an explicit request before committing/pushing;
-   this audit did not authorize itself to perform those actions.
-2. Add appropriate lightweight completion tags, including A-UserGuide and
-   A-MoreTesting, to the relevant completed commits and push them.
+1. **Done:** the user explicitly authorized committing and pushing. Changes were
+   pushed to `master` as `a7f749b`, `3c9387d`, and `651c0a5`.
+2. **Done:** lightweight tags A-MoreTesting and A-UserGuide were created at their
+   completed commits and pushed. Fetching also restored the existing Level-10
+   tag locally without changing the published tag.
 3. Enable GitHub Pages from `master` and `/docs`. Check the actual rendered guide
    and `https://aston-ish.github.io/ip/Ui.png` once deployment finishes.
 4. Publish a new release (suggested `v0.2`) with exactly the verified `topaz.jar`
@@ -120,4 +121,34 @@ compatibility/deprecation warnings on Java 25, but the tested GUI runs.
 
 The course's final-submission deadline is September 18, 2026 at 23:59 Singapore
 time, as listed in the linked Week 6 instructions.
+
+## Requested submission steps 1–3
+
+After the user authorized the push, Java 25.0.4 was reconfirmed and
+`gradlew.bat clean shadowJar test checkstyleMain checkstyleTest` passed. All 82
+JUnit tests passed with no skips, and both Checkstyle tasks passed. The rebuilt
+JAR has the same size and SHA-256 recorded above.
+
+The fresh JAR was copied into a newly created empty folder and launched using
+`java -jar topaz.jar`. Its window title was Gronk and Windows reported it as
+responding. Only the smoke-test instance was closed afterward. The manifest,
+Java 25 class version, FXML/CSS resources, and Windows/Linux/macOS native library
+entries were verified inside the JAR. Bundling libraries is not a substitute for
+running the app on each operating system.
+
+The rebuilt artifact passed all 17 regular CLI sessions and the corrupt-file
+startup session. A further two-process check added all four task types in a fresh
+folder, marked a deadline, restarted, and verified restored completion and search
+numbers. Reading/searching left the saved bytes unchanged.
+
+The last five pushed commit subjects were reviewed for meaningful imperative
+wording, capitalization, length, and punctuation. The exact green Git Standard
+dashboard indicator remains unverified until the user's masked row is identified.
+The dashboard states that its automated results refresh daily.
+
+Step 2 and the local part of step 3 are complete. Step 1 still flags the
+unpublished product website and the old released JAR; a full-mark final submission
+cannot yet be confirmed. Teammate/other-OS testing awaits recipient details and
+their results. A short [smoke-test checklist](smoke-test.md) is ready to accompany
+the JAR. No new GitHub release was created, in line with deferring step 4.
 
