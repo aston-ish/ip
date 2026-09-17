@@ -22,7 +22,7 @@
         <HBox spacing="6.0" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0"
               AnchorPane.rightAnchor="8.0">
             <children>
-                <TextField fx:id="userInput" onAction="#handleUserInput" promptText="Give Gronk a command..."
+                <TextField fx:id="userInput" onAction="#handleUserInput" promptText="Try: todo read book"
                            HBox.hgrow="ALWAYS" />
                 <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput" text="Send" />
             </children>

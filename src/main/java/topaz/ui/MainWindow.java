@@ -57,6 +57,7 @@ public class MainWindow {
                 DialogBox.getUserDialog(input),
                 responseDialog);
         userInput.clear();
+        userInput.requestFocus();
         if (topaz.isExitRequested()) {
             userInput.setDisable(true);
             userInput.setPromptText("Gronk is resting. See you soon!");

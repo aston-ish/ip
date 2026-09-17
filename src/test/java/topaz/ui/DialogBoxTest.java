@@ -4,27 +4,85 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Path;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import topaz.Topaz;
 
 /**
  * Verifies message layouts using real FXML and CSS on the JavaFX thread.
  */
 class DialogBoxTest {
+    @TempDir
+    Path temporaryDirectory;
+
     @BeforeAll
     static void startToolkit() throws Exception {
         FutureTask<Void> startup = new FutureTask<>(() -> null);
         Platform.startup(startup);
         startup.get(10, TimeUnit.SECONDS);
         Platform.setImplicitExit(false);
+    }
+
+    @Test
+    void mainWindow_enterAndSend_handleErrorsAndEndSession() throws Exception {
+        FutureTask<Void> check = new FutureTask<>(() -> {
+            String previous = System.getProperty("topaz.dataFile");
+            try {
+                System.setProperty("topaz.dataFile", temporaryDirectory.resolve("gui.txt").toString());
+                FXMLLoader loader = new FXMLLoader(Main.class.getResource("/view/MainWindow.fxml"));
+                AnchorPane root = loader.load();
+                new Scene(root, 400, 600);
+                loader.<MainWindow>getController().setTopaz(new Topaz());
+                root.applyCss();
+                root.layout();
+                TextField input = (TextField) root.lookup("#userInput");
+                Button send = (Button) root.lookup("#sendButton");
+                VBox messages = (VBox) root.lookup("#dialogContainer");
+                assertEquals(1, messages.getChildren().size());
+
+                input.setText("todo read book");
+                input.fireEvent(new ActionEvent());
+                assertEquals(3, messages.getChildren().size());
+                assertEquals("", input.getText());
+                input.setText("mark 99");
+                send.fire();
+                assertTrue(messages.getChildren().getLast().lookup(".error-dialog") != null);
+                input.setText("list");
+                send.fire();
+                assertTrue(messages.getChildren().getLast().lookup(".error-dialog") == null);
+                Label response = (Label) messages.getChildren().getLast().lookup(".message-text");
+                assertTrue(response.getText().contains("1.[T][ ] read book"));
+                assertTrue(new Topaz().getResponse("list").contains("read book"));
+                input.setText("bye");
+                send.fire();
+                assertTrue(input.isDisabled());
+                assertTrue(send.isDisabled());
+            } finally {
+                if (previous == null) {
+                    System.clearProperty("topaz.dataFile");
+                } else {
+                    System.setProperty("topaz.dataFile", previous);
+                }
+            }
+            return null;
+        });
+        Platform.runLater(check);
+        check.get(10, TimeUnit.SECONDS);
     }
 
     @Test
