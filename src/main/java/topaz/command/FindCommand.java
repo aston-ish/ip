@@ -22,6 +22,6 @@ public class FindCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws TopazException {
-        ui.showMatchingTasks(tasks.find(keyword));
+        ui.showMatchingTasks(tasks.find(keyword), tasks);
     }
 }

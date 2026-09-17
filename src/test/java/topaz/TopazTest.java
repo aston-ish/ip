@@ -19,6 +19,38 @@ class TopazTest {
     Path temporaryDirectory;
 
     @Test
+    void getResponse_findThenModify_usesNumbersFromFullList() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("search.txt"));
+        topaz.getResponse("todo buy milk");
+        topaz.getResponse("todo read book");
+        topaz.getResponse("todo return book");
+
+        String matches = topaz.getResponse("find BOOK");
+        assertTrue(matches.contains("2.[T][ ] read book"));
+        assertTrue(matches.contains("3.[T][ ] return book"));
+        assertFalse(matches.contains("buy milk"));
+        assertTrue(topaz.getResponse("mark 2").contains("[T][X] read book"));
+        assertTrue(topaz.getResponse("delete 3").contains("[T][ ] return book"));
+        assertTrue(topaz.getResponse("list").contains("1.[T][ ] buy milk"));
+
+        Topaz reopened = new Topaz(temporaryDirectory.resolve("search.txt"));
+        assertTrue(reopened.getResponse("find book").contains("2.[T][X] read book"));
+        reopened.getResponse("delete 1");
+        assertTrue(reopened.getResponse("find book").contains("1.[T][X] read book"));
+    }
+
+    @Test
+    void getResponse_emptyResults_explainsNextActionWithoutError() {
+        Topaz topaz = new Topaz(temporaryDirectory.resolve("empty.txt"));
+        assertTrue(topaz.getResponse("list").contains("No tasks yet"));
+        assertFalse(topaz.isResponseError());
+        assertTrue(topaz.getResponse("find absent").contains("No matching tasks"));
+        assertFalse(topaz.isResponseError());
+        topaz.getResponse("todo read book");
+        assertFalse(topaz.getResponse("list").contains("No tasks yet"));
+    }
+
+    @Test
     void getResponse_addThenList_returnsTaskDetails() {
         Topaz topaz = new Topaz(temporaryDirectory.resolve("Topaz.txt"));
 

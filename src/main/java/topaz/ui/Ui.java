@@ -85,6 +85,9 @@ public class Ui {
      */
     public void showTaskList(TaskList tasks) {
         showResponse(" Gronk guards your task pile:");
+        if (tasks.size() == 0) {
+            output.accept(" No tasks yet. Try: todo read book");
+        }
         showNumberedTasks(tasks.asList());
     }
 
@@ -92,10 +95,16 @@ public class Ui {
      * Shows tasks whose descriptions match a search keyword.
      *
      * @param matchingTasks the matching tasks to display
+     * @param allTasks the full list that supplies the numbers used by task commands
      */
-    public void showMatchingTasks(List<Task> matchingTasks) {
+    public void showMatchingTasks(List<Task> matchingTasks, TaskList allTasks) {
         showResponse(" Gronk sniffed out these tasks:");
-        showNumberedTasks(matchingTasks);
+        if (matchingTasks.isEmpty()) {
+            output.accept(" No matching tasks. Try another keyword or use list.");
+        }
+        for (Task task : matchingTasks) {
+            showNumberedTask(task, allTasks.asList().indexOf(task) + 1);
+        }
     }
 
     /**
@@ -105,10 +114,15 @@ public class Ui {
      */
     private void showNumberedTasks(List<Task> tasks) {
         for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            output.accept(" " + (i + 1) + "." + task.getDisplayIcon() + " "
-                    + task.getDescription());
+            showNumberedTask(tasks.get(i), i + 1);
         }
+    }
+
+    /**
+     * Shows a task with the number accepted by mark, unmark, and delete.
+     */
+    private void showNumberedTask(Task task, int taskNumber) {
+        output.accept(" " + taskNumber + "." + task.getDisplayIcon() + " " + task.getDescription());
     }
 
     /**

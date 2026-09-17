@@ -54,7 +54,8 @@ UI cases remain applicable without revision.
 
 Aim: Verify that a fresh chatbot process loads saved tasks with their type, completion status, and time fields intact.
 
-Setup: Create `data/Topaz.txt` with the following contents before starting Topaz:
+Setup: Create `build/reload-ui-data.txt` with the following contents and launch with
+`-Dtopaz.dataFile=build/reload-ui-data.txt`. Never overwrite the real save file:
 
 ```text
 D | 1 | return book | 2026-12-07
@@ -222,18 +223,21 @@ GRONK!
 ____________________________________________________________
 GRONK!
  Gronk guards your task pile:
+ No tasks yet. Try: todo read book
 ____________________________________________________________
 GRONK!
  Gronk hit a snag. Task details cannot contain the | character.
 ____________________________________________________________
 GRONK!
  Gronk guards your task pile:
+ No tasks yet. Try: todo read book
 ____________________________________________________________
 GRONK!
  Gronk hit a snag. Task details cannot contain the | character.
 ____________________________________________________________
 GRONK!
  Gronk guards your task pile:
+ No tasks yet. Try: todo read book
 ____________________________________________________________
 GRONK!
  Gronk rests now. Come back strong!
@@ -510,6 +514,7 @@ GRONK!
 ____________________________________________________________
 GRONK!
  Gronk guards your task pile:
+ No tasks yet. Try: todo read book
 ____________________________________________________________
 GRONK!
  Gronk rests now. Come back strong!
@@ -537,6 +542,7 @@ Give Gronk a task. We crush it together!
 ____________________________________________________________
 GRONK!
  Gronk guards your task pile:
+ No tasks yet. Try: todo read book
 ____________________________________________________________
 GRONK!
  Gronk grabbed a new task:
@@ -1007,3 +1013,74 @@ Do not run this check against the user's real saved tasks.
 
 The separate `test/storage-ui-test-plan.md` checks startup output for corrupt
 saved data using its own disposable fixture.
+
+
+## Finalization checks
+
+Search results retain full-list numbers. The GUI controller is also covered by
+JUnit using real FXML: Enter, Send, error recovery, persistence, and disabled
+controls after bye. Window resizing and the packaged JAR are smoke-tested separately.
+
+### Test case: Search numbers identify the task to change
+
+Aim: Search a subset, then mark and delete using the displayed full-list numbers.
+
+Input:
+```text
+todo buy milk
+todo read book
+find BOOK
+mark 2
+find book
+delete 2
+find book
+list
+bye
+```
+
+Expected output:
+```text
+____________________________________________________________
+GRONK!
+I'm Gronk, your mighty task keeper.
+Give Gronk a task. We crush it together!
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] buy milk
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk grabbed a new task:
+   [T][ ] read book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk sniffed out these tasks:
+ 2.[T][ ] read book
+____________________________________________________________
+GRONK!
+ Task crushed! Gronk marks it done:
+   [T][X] read book
+____________________________________________________________
+GRONK!
+ Gronk sniffed out these tasks:
+ 2.[T][X] read book
+____________________________________________________________
+GRONK!
+ Gronk tossed this task out:
+   [T][X] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+GRONK!
+ Gronk sniffed out these tasks:
+ No matching tasks. Try another keyword or use list.
+____________________________________________________________
+GRONK!
+ Gronk guards your task pile:
+ 1.[T][ ] buy milk
+____________________________________________________________
+GRONK!
+ Gronk rests now. Come back strong!
+____________________________________________________________
+```
