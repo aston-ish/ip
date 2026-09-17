@@ -4,6 +4,30 @@ Gronk is a cheerful, mighty task keeper. Add to the task pile, crush completed
 tasks, and hear a signature **GRONK!** with every reply. The GUI uses large
 green battle cries, forest-green command bubbles, and distinct red error cards.
 
+Read the [User Guide](docs/README.md) for installation, commands, examples,
+and troubleshooting. Download the app from
+[GitHub Releases](https://github.com/aston-ish/ip/releases).
+
+## Build and verify
+
+Use **Java 25**, then run `./gradlew clean test checkstyleMain checkstyleTest shadowJar`
+(Windows: `.\gradlew.bat clean test checkstyleMain checkstyleTest shadowJar`).
+The distributable is `build/libs/topaz.jar`; start it with `java -jar build/libs/topaz.jar`.
+JavaFX GUI tests require a graphical desktop (or Xvfb on Linux).
+
+The command-line test plan is in [test/ui-test-plan.md](test/ui-test-plan.md).
+Use a disposable save file when testing. Final verification and outstanding
+submission steps are recorded in [test/final-audit.md](test/final-audit.md).
+
+## Credits
+
+This project builds on the [SE-EDU Duke starter](https://github.com/se-edu/duke)
+and its [JavaFX tutorial](https://se-education.org/guides/tutorials/javaFx.html),
+including the launcher, FXML controller, and dialog structure. Original starter
+contributors are retained in [CONTRIBUTORS.md](CONTRIBUTORS.md).
+Codex assisted the final review, search-numbering fix, GUI tests, user guide,
+and release verification. The student remains responsible for reviewing the work.
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
