@@ -17,7 +17,9 @@ available, [build Gronk from source](https://github.com/aston-ish/ip#build-and-v
 to use the interface shown above.
 
 1. Install **Java 25**. Run `java -version` in a terminal to check your version.
-2. Download `topaz.jar` from the [latest release](https://github.com/aston-ish/ip/releases/latest).
+2. For now, build from source using the link above and copy `build/libs/topaz.jar`.
+   Once the GUI release is published, you can download `topaz.jar` from the
+   [latest release](https://github.com/aston-ish/ip/releases/latest) instead.
    The filename is retained from earlier versions; the application is **Gronk**.
 3. Put the JAR in a writable folder. Open a terminal in that folder and run:
 
@@ -172,7 +174,8 @@ For a path with spaces, quote the whole option, for example
 
 - **Unable to access jarfile:** open a terminal in the JAR's folder or give its full path.
 - **UnsupportedClassVersionError:** run `java -version` and select Java 25.
-- **JavaFX runtime components are missing:** use the release JAR. From source,
+- **JavaFX runtime components are missing:** use the fat JAR produced by
+  Gradle's `shadowJar` task (or the GUI release JAR when available). From source,
   run `topaz.ui.Launcher` or Gradle's `run` task.
 - **Native library/graphics error:** bundled JavaFX targets Windows, Linux, and
   macOS on x64. Other CPU architectures need a matching JavaFX runtime/build.

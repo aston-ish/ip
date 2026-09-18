@@ -6,8 +6,9 @@ green battle cries, forest-green command bubbles, and distinct red error cards.
 
 Visit the [Gronk product website](https://aston-ish.github.io/ip/) or read the
 [User Guide](docs/README.md) for installation, commands, examples,
-and troubleshooting. Download the app from
-[GitHub Releases](https://github.com/aston-ish/ip/releases).
+and troubleshooting. The updated GUI release is awaiting publication; use the
+build instructions below for the current app. The existing
+[GitHub release](https://github.com/aston-ish/ip/releases) is the earlier console version.
 
 ## Build and verify
 

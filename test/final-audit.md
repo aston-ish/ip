@@ -9,12 +9,12 @@ Reviewed on 17 September 2026 against the supplied grading bars and the current
 
 ## Current conclusion
 
-The reviewed implementation and local documentation satisfy the checked feature,
-OOP, Javadoc, testing, and coding-quality bars. Publication is **not complete**:
-GitHub Pages is disabled and the latest release still contains the old CLI JAR.
-Consequently this is not yet evidence of a complete final submission or a guaranteed
-15/15. Published appearance and final dashboard status require verification after
-publishing. Historical weekly credit is ultimately determined by the course.
+The reviewed implementation and documentation satisfy the checked feature, OOP,
+Javadoc, testing, and coding-quality bars. The product website and screenshot are
+published and were verified on 18 September 2026. Publication is **not complete**:
+the latest release still contains the old CLI JAR. Consequently this is not yet
+evidence of a complete final submission or a guaranteed 15/15. Final dashboard
+status remains unverified. Historical weekly credit is determined by the course.
 
 ## Deliverable evidence
 
@@ -32,7 +32,7 @@ publishing. Historical weekly credit is ultimately determined by the course.
 | At least two AI-assisted optional increments | Existing BetterGui, Personality, and MoreErrorHandling implementations are present and tagged. This finalization used Codex for further BetterGui changes (minimum size, focus, prompt) and MoreTesting (search/GUI regressions and packaged-app checks) |
 | User guide | Replaced template with installation, all commands, examples, numbering rules, date/duration formats, errors, backup/recovery, and troubleshooting |
 | Product screenshot | `docs/Ui.png` is a real single-window capture, with Gronk title and full input controls |
-| Website / release | Local guide preview checked; Pages and the new release remain to be published |
+| Website / release | Live Pages guide and screenshot verified on desktop and mobile; new GUI release pending |
 
 The required implementation increments were reviewed individually; optional and
 if-applicable increments such as A-CI and A-Varargs are not treated as missing
@@ -67,7 +67,8 @@ Environment: Windows, Temurin Java **25.0.4**. Production task data was not used
 - The exact `java -jar topaz.jar` launch also opened a responsive window titled Gronk from a separate folder.
 - Local HTML preview contained two valid tables, no broken images or placeholders,
   and no page overflow at a 390-pixel viewport. Screenshot and mobile preview were
-  visually inspected. This is not yet a check of the published Jekyll page.
+  visually inspected. The published Jekyll page was subsequently verified on
+  18 September, as recorded below.
 - `git diff --check` passed.
 
 Packaged artifact: `build/libs/topaz.jar` (12,884,560 bytes).
@@ -111,8 +112,8 @@ compatibility/deprecation warnings on Java 25, but the tested GUI runs.
 2. **Done:** lightweight tags A-MoreTesting and A-UserGuide were created at their
    completed commits and pushed. Fetching also restored the existing Level-10
    tag locally without changing the published tag.
-3. Enable GitHub Pages from `master` and `/docs`. Check the actual rendered guide
-   and `https://aston-ish.github.io/ip/Ui.png` once deployment finishes.
+3. **Done:** GitHub Pages uses `master` and `/docs`, with HTTPS enforced. The
+   actual rendered guide and `https://aston-ish.github.io/ip/Ui.png` were checked.
 4. Publish a new release (suggested `v0.2`) with exactly the verified `topaz.jar`
    asset. Release notes are prepared in `build/release-notes.md`. The current
    August 30 release asset is only 22,221 bytes and predates the GUI.
@@ -146,9 +147,30 @@ wording, capitalization, length, and punctuation. The exact green Git Standard
 dashboard indicator remains unverified until the user's masked row is identified.
 The dashboard states that its automated results refresh daily.
 
-Step 2 and the local part of step 3 are complete. Step 1 still flags the
-unpublished product website and the old released JAR; a full-mark final submission
-cannot yet be confirmed. Teammate/other-OS testing awaits recipient details and
+Step 2 and the local part of step 3 are complete. Step 1 still flags the old
+released JAR and unverified dashboard; a full-mark final submission cannot yet
+be confirmed. Teammate/other-OS testing awaits recipient details and
 their results. A short [smoke-test checklist](smoke-test.md) is ready to accompany
 the JAR. No new GitHub release was created, in line with deferring step 4.
+
+## Published website verification — 18 September 2026
+
+- The [product website](https://aston-ish.github.io/ip/) returns HTTP 200 and
+  identifies the product as **Gronk User Guide**. GitHub Pages builds from
+  `master:/docs`; the deployment at commit `70898c6` succeeded.
+- `docs/Ui.png` is a real 886 × 573 capture of one complete GUI window. It shows
+  the Gronk title, all four task types, completed tasks, and the input controls.
+  The [public screenshot](https://aston-ish.github.io/ip/Ui.png) returns HTTP 200
+  and its bytes match the repository file exactly.
+- The course showcase loads and decodes the screenshot in the `aston-ish` entry
+  under **CS2103T-W08-4** after expanding the tutorial group.
+- The published guide has two rendered tables and covers all ten commands,
+  supported date/duration formats, search numbering, validation, persistence,
+  recovery, and launch troubleshooting. Desktop and mobile views were checked;
+  the page has no horizontal overflow at a 390-pixel viewport.
+- Installation instructions explicitly distinguish the available console
+  release from the current GUI build, with a working source-build link.
+- The first Pages deployment exposed a broken tracked local-skill submodule
+  reference. Removing that reference from Git fixed deployment; the local skill
+  files were preserved. This did not change application code or the tested JAR.
 
