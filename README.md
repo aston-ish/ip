@@ -4,7 +4,8 @@ Gronk is a cheerful, mighty task keeper. Add to the task pile, crush completed
 tasks, and hear a signature **GRONK!** with every reply. The GUI uses large
 green battle cries, forest-green command bubbles, and distinct red error cards.
 
-Read the [User Guide](docs/README.md) for installation, commands, examples,
+Visit the [Gronk product website](https://aston-ish.github.io/ip/) or read the
+[User Guide](docs/README.md) for installation, commands, examples,
 and troubleshooting. Download the app from
 [GitHub Releases](https://github.com/aston-ish/ip/releases).
 

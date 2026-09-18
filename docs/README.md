@@ -4,9 +4,17 @@ Gronk is your mighty task keeper: track tasks, plan deadlines and events,
 estimate effort, and mark work done. Tasks stay on your computer and are saved
 automatically after each successful change.
 
-![Gronk showing its desktop task list](Ui.png)
+![Gronk's full desktop window showing to-dos, deadlines, an event, and duration tasks](Ui.png)
+
+*A typical study week in Gronk: all four task types, completed work, and a keyword
+search ready to run.*
 
 ## Quick start
+
+**Release status:** The updated GUI JAR is awaiting publication. The current
+GitHub release contains the earlier console version. Until the new release is
+available, [build Gronk from source](https://github.com/aston-ish/ip#build-and-verify)
+to use the interface shown above.
 
 1. Install **Java 25**. Run `java -version` in a terminal to check your version.
 2. Download `topaz.jar` from the [latest release](https://github.com/aston-ish/ip/releases/latest).
